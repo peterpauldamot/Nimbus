@@ -1,0 +1,112 @@
+# Gradle files
+.gradle/
+build/
+**/build/
+!.gradle/dependencies.gradle
+
+# Local configuration file (SDK path, etc)
+local.properties
+
+# Signing keys
+**/release.keystore
+**/*.jks
+**/*.keystore
+
+# Android Studio specific files
+.idea/
+**/*.iml
+*.iml
+*.ipr
+*.iws
+
+# Generated files
+*.apk
+*.ap_
+*.aab
+*.dex
+*.class
+**/generated/
+
+# macOS specific files
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+
+# Windows/Linux backup files
+*.swp
+*.swo
+*~
+
+# Log files
+*.log
+
+# Gradle cache
+.caches/
+wrapper/dists/
+**/wrapper/dists/
+
+# IntelliJ generated files
+.idea/workspace.xml
+.idea/libraries
+.idea/tasks.xml
+.idea/gradle.xml
+.idea/assetWizardSettings.xml
+.idea/dictionaries
+.idea/vcs.xml
+.idea/misc.xml
+.idea/modules.xml
+
+# Miscellaneous
+*.orig
+*.tmp
+*.bak
+*.backup
+
+# Keystore files and security-sensitive data
+**/*.keystore
+**/*.jks
+
+# Application binary files and artifacts
+*.apk
+*.ap_
+
+# Database files
+*.db
+*.db-wal
+*.db-shm
+
+# Additional folders (optional)
+**/captures/
+**/outputs/
+
+# Firebase
+google-services.json
+**/crashlytics.properties
+**/fabric.properties
+**/crashlytics-build.properties
+.firebase/
+.analytics/
+
+# NDK
+obj/
+.externalNativeBuild/
+
+# Kotlin
+**/kotlin/cache/
+**/kotlin/tmp/
+**/kotlin-ide-*
+**/kotlin-gradle/
+
+# JetBrains specific files
+.idea/
+.idea/.name
+.idea/compiler.xml
+.idea/jarRepositories.xml
+.idea/modules.xml
+.idea/libraries/
+.idea/vcs.xml
+.idea/viewProviders.xml
+.idea/.idea
+.idea/.tasks
