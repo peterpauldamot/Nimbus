@@ -4,13 +4,13 @@
  * Last modified on 2024-11-09.
  */
 
-package com.weather.nimbus
+package com.weather.nimbus.data.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class FiveDayThreeHourForecastResponse(
+data class FiveDayForecastResponse(
     @SerialName("cnt") val noOfTimestamps: Int,
     @SerialName("list") val forecast: List<Forecast>,
     @SerialName("city") val city: City

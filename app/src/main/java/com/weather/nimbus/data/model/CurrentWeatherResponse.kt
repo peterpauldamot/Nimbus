@@ -4,7 +4,7 @@
  * Last modified on 2024-11-09.
  */
 
-package com.weather.nimbus
+package com.weather.nimbus.data.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
