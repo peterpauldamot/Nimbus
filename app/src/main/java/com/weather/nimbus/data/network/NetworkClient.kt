@@ -7,10 +7,12 @@
 package com.weather.nimbus.data.network
 
 import com.weather.nimbus.data.network.api.OpenWeatherAPI
+import kotlinx.serialization.json.Json
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.kotlinx.serialization.asConverterFactory
 
 object NetworkClient {
     private const val BASE_URL = "https://api.openweathermap.org/data/2.5/"
@@ -24,10 +26,14 @@ object NetworkClient {
             .addInterceptor(loggingInterceptor)
             .build()
 
+        val json = Json {
+            ignoreUnknownKeys = true
+        }
+
         val retrofit = Retrofit.Builder()
             .client(client)
             .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
             .build()
 
         return retrofit.create(OpenWeatherAPI::class.java)

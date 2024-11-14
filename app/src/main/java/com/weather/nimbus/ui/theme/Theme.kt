@@ -39,6 +39,37 @@ private val LightColorScheme = lightColorScheme(
     */
 )
 
+// Drizzle Color Theme
+private val DrizzleColorScheme = lightColorScheme(
+    primary = LightRainBlue, // LightRainBlue
+    secondary = PaleYellow, // PaleYellow
+    tertiary = MistGray, // MistGray
+
+    // Default Colors to Override
+    background = SoftBlueGray, // SoftBlueGray
+    surface = PaleGray, // PaleGray
+    onPrimary = PureWhite, // Text/icons on primary color
+    onSecondary = DarkGray, // DarkGray text/icons on secondary color
+    onTertiary = DarkGray, // DarkGray text/icons on tertiary color
+    onBackground = DarkGray, // DarkGray text/icons on background
+    onSurface = LightGray // LightGray text/icons on surface
+)
+
+private val SunnyColorScheme = lightColorScheme(
+    primary = SunnyOrange, // Sunny orange for primary color
+    secondary = LightSkyBlue, // Light sky blue for secondary color
+    tertiary = SoftOrange, // Soft orange for accents
+
+    // Default Colors to Override
+    background = LightButteryYellow, // Light buttery yellow background
+    surface = Gold, // Gold for surfaces like cards or buttons
+    onPrimary = PureWhite, // White text/icons on primary color
+    onSecondary = DeepBrown, // Deep brown text/icons on secondary color
+    onTertiary = DeepBrown, // Deep brown text/icons on tertiary color
+    onBackground = DeepBrown, // Dark text on light background
+    onSurface = PureWhite // White text/icons on gold surfaces
+)
+
 @Composable
 fun NimbusTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
@@ -57,7 +88,7 @@ fun NimbusTheme(
     }
 
     MaterialTheme(
-        colorScheme = colorScheme,
+        colorScheme = SunnyColorScheme,
         typography = Typography,
         content = content
     )

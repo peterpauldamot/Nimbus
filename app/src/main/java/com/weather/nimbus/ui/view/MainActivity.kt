@@ -6,70 +6,60 @@
 
 package com.weather.nimbus.ui.view
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
-import com.weather.nimbus.ui.viewmodel.WeatherViewModel
-import com.weather.nimbus.ui.viewmodel.WeatherViewModelFactory
 import com.weather.nimbus.data.network.NetworkClient
 import com.weather.nimbus.data.network.api.OpenWeatherServiceImpl
 import com.weather.nimbus.ui.theme.NimbusTheme
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
+import com.weather.nimbus.ui.viewmodel.WeatherViewModel
+import com.weather.nimbus.ui.viewmodel.WeatherViewModelFactory
 
 class MainActivity : ComponentActivity() {
     private lateinit var weatherViewModel: WeatherViewModel
 
+    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        callCurrentWeather()
+
         enableEdgeToEdge()
         setContent {
-            NimbusTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-            }
+            MainDashboard(weatherViewModel = weatherViewModel)
         }
+    }
 
-        val openWeatherService = OpenWeatherServiceImpl(NetworkClient.create())
+    private fun callCurrentWeather() {
+        val openWeatherApi = NetworkClient.create()
+        val openWeatherService = OpenWeatherServiceImpl(openWeatherApi)
         val factory = WeatherViewModelFactory(openWeatherService)
-        weatherViewModel = ViewModelProvider(this, factory).get(WeatherViewModel::class.java)
-
-        // Collect weather data from StateFlow
-        lifecycleScope.launch {
-            weatherViewModel.weatherData.collectLatest { weather ->
-                Log.d("Activity", "Weather data collected: $weather")
-                weather?.let {
-                    // TODO: Update UI with weather data
-                    println(weather)
-                }
-            }
-        }
-
-        // Collect error state from StateFlow
-        lifecycleScope.launch {
-            weatherViewModel.errorState.collectLatest { errorMessage ->
-                Log.d("Activity", "Error message collected: $errorMessage")
-                errorMessage?.let {
-                    // TODO: Show error message
-                    println(errorMessage)
-                }
-            }
-        }
+        weatherViewModel = ViewModelProvider(this, factory)[WeatherViewModel::class.java]
 
         // Trigger data loading
         Log.d("Activity", "onCreate: Triggering getCurrentWeather")
@@ -80,18 +70,11 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+
 
 @Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
-    NimbusTheme {
-        Greeting("Android")
-    }
+fun NimbusPreview() {
+    lateinit var weatherViewModel: WeatherViewModel
+    MainDashboard(weatherViewModel = weatherViewModel)
 }
