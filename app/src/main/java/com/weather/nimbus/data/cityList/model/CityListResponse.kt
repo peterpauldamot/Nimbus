@@ -19,8 +19,8 @@ data class CityListModel(
 ) {
     @Serializable
     data class Coordinates(
-        @SerialName("lon") val longitude: String,
-        @SerialName("lat") val latitude: String
+        @SerialName("lon") val longitude: Double,
+        @SerialName("lat") val latitude: Double
     )
 }
 

@@ -6,8 +6,8 @@
 
 package com.weather.nimbus.data.weather.network.api
 
-import com.weather.nimbus.data.weather.model.weather.CurrentWeatherResponse
-import com.weather.nimbus.data.weather.model.weather.FiveDayForecastResponse
+import com.weather.nimbus.data.weather.model.CurrentWeatherResponse
+import com.weather.nimbus.data.weather.model.FiveDayForecastResponse
 
 interface OpenWeatherService {
     suspend fun getCurrentWeather(

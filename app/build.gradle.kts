@@ -64,6 +64,7 @@ dependencies {
     implementation(libs.okhttp.logging.interceptor)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.google.android.location)
+    implementation ("com.google.code.gson:gson:2.8.9")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
