@@ -1,7 +1,7 @@
 /*
- * Created by Peter Paul Damot on 2024-11-09.
+ * Created by Peter Paul Damot on 11-09-2024
  * Copyright (c) 2024. All rights reserved.
- * Last modified on 2024-11-09.
+ * Last modified on 11-17-2024.
  */
 
 plugins {
@@ -13,7 +13,7 @@ plugins {
 
 android {
     namespace = "com.weather.nimbus"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.weather.nimbus"
@@ -57,11 +57,13 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.material.icons)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.converter.serialization)
     implementation(libs.retrofit)
     implementation(libs.okhttp.logging.interceptor)
     implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.google.android.location)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

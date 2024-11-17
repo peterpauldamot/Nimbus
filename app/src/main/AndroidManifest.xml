@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ /*Created by Peter Paul Damot on 2024-11-09.
+  ~ Created by Peter Paul Damot on 11-09-2024
   ~ Copyright (c) 2024. All rights reserved.
-  ~ Last modified on 2024-11-09.*/
+  ~ Last modified on 11-17-2024.
   -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:allowBackup="true"

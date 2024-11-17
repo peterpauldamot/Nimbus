@@ -1,7 +1,7 @@
 /*
- * Created by Peter Paul Damot on 2024-11-10.
+ * Created by Peter Paul Damot on 11-10-2024
  * Copyright (c) 2024. All rights reserved.
- * Last modified on 2024-11-10.
+ * Last modified on 11-17-2024.
  */
 
 package com.weather.nimbus.ui.viewmodel
@@ -9,35 +9,82 @@ package com.weather.nimbus.ui.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.weather.nimbus.data.model.CurrentWeatherResponse
-import com.weather.nimbus.data.network.api.OpenWeatherService
+import com.weather.nimbus.data.weather.model.cities.CityListModel
+import com.weather.nimbus.data.weather.model.weather.CurrentWeatherResponse
+import com.weather.nimbus.data.weather.model.weather.FiveDayForecastResponse
+import com.weather.nimbus.data.weather.network.api.OpenWeatherService
+import com.weather.nimbus.domain.location.LocationUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
 
-class WeatherViewModel(private val openWeatherService: OpenWeatherService) : ViewModel() {
-    // A MutableStateFlow to hold the weather data state
+class WeatherViewModel(
+    private val openWeatherService: OpenWeatherService,
+    private val locationUseCase: LocationUseCase
+) : ViewModel() {
     private val _weatherData = MutableStateFlow<CurrentWeatherResponse?>(null)
     val weatherData: StateFlow<CurrentWeatherResponse?> = _weatherData
 
-    // A MutableStateFlow for managing error states
+    private val _forecastData = MutableStateFlow<FiveDayForecastResponse?>(null)
+    val forecastData: StateFlow<FiveDayForecastResponse?> = _forecastData
+
+    private val _cityData = MutableStateFlow<CityListModel?>(null)
+    val cityData: StateFlow<CityListModel?> = _cityData
+
     private val _errorState = MutableStateFlow<String?>(null)
     val errorState: StateFlow<String?> = _errorState
 
-    // Function to fetch current weather
-    fun getCurrentWeather(lat: String, long: String, key: String) {
+    fun getCurrentWeather() {
         viewModelScope.launch {
             try {
-                val response = openWeatherService.getCurrentWeather(
-                    latitude = lat,
-                    longitude = long,
-                    apiKey = key)
-                _weatherData.value = response // Update the StateFlow with new data
-                Log.d("WeatherViewModel", "Weather data updated: $response")
+                Log.d("API", "Retrieving Location")
+                val location = locationUseCase.getCurrentLocation()
+                location?.let {
+                    Log.d("API", "Calling getCurrentWeather")
+                    val response = openWeatherService.getCurrentWeather(
+                        latitude = it.latitude.toString(),
+                        longitude = it.longitude.toString()
+                    )
+                    _weatherData.value = response
+                    Log.d("API", "Weather data updated: $response")
+                } ?: run {
+                    _errorState.value = "Location not found"
+                    Log.e("API", "Error fetching weather data: No Location")
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
-                _errorState.value = e.message // Update the StateFlow with the error
-                Log.e("WeatherViewModel", "Error fetching weather data", e)
+                _errorState.value = e.message
+                Log.e("API", "Error fetching weather data:", e)
+            }
+        }
+    }
+
+    fun getForecastWeather(lat: String, long: String, key: String) {
+        Log.d("API", "Executing getForecastWeather with lat:$lat, long:$long")
+        viewModelScope.launch {
+            try {
+                val response = openWeatherService.getFiveDayForecast(
+                    latitude = lat,
+                    longitude = long)
+                _forecastData.value = response
+            } catch (e: Exception) {
+                e.printStackTrace()
+                _errorState.value = e.message
+                Log.e("API", "Error fetching forecast data:", e)
+            }
+        }
+    }
+
+    fun loadCityData(jsonString: String) {
+        viewModelScope.launch {
+            try {
+                val cityList = Json.decodeFromString<CityListModel>(jsonString)
+                _cityData.value = cityList
+            } catch (e: Exception) {
+                e.printStackTrace()
+                _errorState.value = e.message
+                Log.e("API", "Error loading city list", e)
             }
         }
     }

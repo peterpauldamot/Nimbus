@@ -1,53 +1,39 @@
 /*
- * Created by Peter Paul Damot on 2024-11-09.
+ * Created by Peter Paul Damot on 11-09-2024
  * Copyright (c) 2024. All rights reserved.
- * Last modified on 2024-11-10.
+ * Last modified on 11-17-2024.
  */
 
 package com.weather.nimbus.ui.view
 
-import android.annotation.SuppressLint
+import android.location.Location
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModelProvider
-import com.weather.nimbus.data.network.NetworkClient
-import com.weather.nimbus.data.network.api.OpenWeatherServiceImpl
-import com.weather.nimbus.ui.theme.NimbusTheme
+import com.example.location.LocationProviderImpl
+import com.weather.nimbus.data.weather.network.NetworkClient
+import com.weather.nimbus.data.weather.network.api.OpenWeatherServiceImpl
+import com.weather.nimbus.domain.location.LocationHelper
+import com.weather.nimbus.domain.location.LocationRepository
+import com.weather.nimbus.domain.location.LocationUseCase
+import com.weather.nimbus.ui.view.dashboard.MainDashboard
 import com.weather.nimbus.ui.viewmodel.WeatherViewModel
 import com.weather.nimbus.ui.viewmodel.WeatherViewModelFactory
 
 class MainActivity : ComponentActivity() {
     private lateinit var weatherViewModel: WeatherViewModel
+    private lateinit var locationHelper: LocationHelper
 
-    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        callCurrentWeather()
+
+        setupDataLayer()
+        setupLocationServices()
 
         enableEdgeToEdge()
         setContent {
@@ -55,22 +41,62 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun callCurrentWeather() {
+    override fun onResume() {
+        super.onResume()
+        weatherViewModel.getCurrentWeather()
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        locationHelper.onRequestPermissionsResult(
+            requestCode,
+            permissions,
+            grantResults
+        ) { isGranted ->
+            if (isGranted) {
+                weatherViewModel.getCurrentWeather()
+            } else {
+                Log.d("Location", "Location permission denied")
+            }
+        }
+    }
+
+    private fun setupDataLayer() {
         val openWeatherApi = NetworkClient.create()
         val openWeatherService = OpenWeatherServiceImpl(openWeatherApi)
-        val factory = WeatherViewModelFactory(openWeatherService)
-        weatherViewModel = ViewModelProvider(this, factory)[WeatherViewModel::class.java]
 
-        // Trigger data loading
-        Log.d("Activity", "onCreate: Triggering getCurrentWeather")
-        weatherViewModel.getCurrentWeather(
-            "16.41",
-            "120.59",
-            "2f1894939b86e62241429f38569bef0e")
+        val locationProvider = LocationProviderImpl(context = this)
+        val locationRepository = LocationRepository(locationProvider)
+        val locationUseCase = LocationUseCase(locationRepository)
+
+        val factory = WeatherViewModelFactory(openWeatherService, locationUseCase)
+        weatherViewModel = ViewModelProvider(this, factory)[WeatherViewModel::class.java]
+    }
+
+    private fun setupLocationServices() {
+        locationHelper = LocationHelper(this)
+        locationHelper.requestLocationPermission(this)
+    }
+
+    private fun loadCityListJson() {
+        Log.d("CityList", "File exists: ${assets.list("")?.contains("CityList.json")}")
+        try {
+            val json = applicationContext.assets
+                .open("CityList.json")
+                .bufferedReader()
+                .use { it.readText() }
+            weatherViewModel.loadCityData(json)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Log.e("CityList", "Failed to load city list JSON: ${e.message}")
+        }
     }
 }
-
-
 
 @Preview(showBackground = true)
 @Composable
