@@ -9,19 +9,20 @@ package com.weather.nimbus.ui.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.weather.nimbus.data.weather.model.cities.CityListModel
-import com.weather.nimbus.data.weather.model.weather.CurrentWeatherResponse
-import com.weather.nimbus.data.weather.model.weather.FiveDayForecastResponse
-import com.weather.nimbus.data.weather.network.api.OpenWeatherService
+import com.weather.nimbus.data.cityList.model.CityListResponse
+import com.weather.nimbus.data.weather.model.CurrentWeatherResponse
+import com.weather.nimbus.data.weather.model.FiveDayForecastResponse
+import com.weather.nimbus.data.weather.source.service.OpenWeatherService
+import com.weather.nimbus.domain.cityList.CityListUseCase
 import com.weather.nimbus.domain.location.LocationUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.Json
 
 class WeatherViewModel(
     private val openWeatherService: OpenWeatherService,
-    private val locationUseCase: LocationUseCase
+    private val locationUseCase: LocationUseCase,
+    private val cityListUseCase: CityListUseCase
 ) : ViewModel() {
     private val _weatherData = MutableStateFlow<CurrentWeatherResponse?>(null)
     val weatherData: StateFlow<CurrentWeatherResponse?> = _weatherData
@@ -29,8 +30,8 @@ class WeatherViewModel(
     private val _forecastData = MutableStateFlow<FiveDayForecastResponse?>(null)
     val forecastData: StateFlow<FiveDayForecastResponse?> = _forecastData
 
-    private val _cityData = MutableStateFlow<CityListModel?>(null)
-    val cityData: StateFlow<CityListModel?> = _cityData
+    private val _cityData = MutableStateFlow<List<CityListResponse>>(emptyList())
+    val cityData: StateFlow<List<CityListResponse?>> = _cityData
 
     private val _errorState = MutableStateFlow<String?>(null)
     val errorState: StateFlow<String?> = _errorState
@@ -76,16 +77,10 @@ class WeatherViewModel(
         }
     }
 
-    fun loadCityData(jsonString: String) {
+    fun loadCityData() {
         viewModelScope.launch {
-            try {
-                val cityList = Json.decodeFromString<CityListModel>(jsonString)
-                _cityData.value = cityList
-            } catch (e: Exception) {
-                e.printStackTrace()
-                _errorState.value = e.message
-                Log.e("API", "Error loading city list", e)
-            }
+            val cityList = cityListUseCase.getCityList()
+            _cityData.value = cityList
         }
     }
 }

@@ -4,7 +4,7 @@
  * Last modified on 11-17-2024.
  */
 
-package com.weather.nimbus.data.weather.network.api
+package com.weather.nimbus.data.weather.source.api
 
 import com.weather.nimbus.data.weather.model.CurrentWeatherResponse
 import com.weather.nimbus.data.weather.model.FiveDayForecastResponse

@@ -1,10 +1,10 @@
 /*
  * Created by Peter Paul Damot on 11-09-2024
  * Copyright (c) 2024. All rights reserved.
- * Last modified on 11-17-2024.
+ * Last modified on 11-18-2024.
  */
 
-package com.weather.nimbus.data.weather.model.weather
+package com.weather.nimbus.data.weather.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

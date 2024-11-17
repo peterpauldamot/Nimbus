@@ -1,12 +1,12 @@
 /*
  * Created by Peter Paul Damot on 11-10-2024
  * Copyright (c) 2024. All rights reserved.
- * Last modified on 11-17-2024.
+ * Last modified on 11-18-2024.
  */
 
-package com.weather.nimbus.data.weather.network
+package com.weather.nimbus.data.weather
 
-import com.weather.nimbus.data.weather.network.api.OpenWeatherAPI
+import com.weather.nimbus.data.weather.source.api.OpenWeatherAPI
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient

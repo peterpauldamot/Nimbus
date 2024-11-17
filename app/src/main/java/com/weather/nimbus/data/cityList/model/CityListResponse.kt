@@ -1,16 +1,16 @@
 /*
  * Created by Peter Paul Damot on 11-17-2024
  * Copyright (c) 2024. All rights reserved.
- * Last modified on 11-17-2024.
+ * Last modified on 11-18-2024.
  */
 
-package com.weather.nimbus.data.weather.model.cities
+package com.weather.nimbus.data.cityList.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class CityListModel(
+data class CityListResponse(
     @SerialName("id") val id: Int,
     @SerialName("name") val name: String,
     @SerialName("state") val state: String,

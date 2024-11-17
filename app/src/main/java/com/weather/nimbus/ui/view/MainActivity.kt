@@ -6,7 +6,6 @@
 
 package com.weather.nimbus.ui.view
 
-import android.location.Location
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -16,8 +15,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.ViewModelProvider
 import com.example.location.LocationProviderImpl
-import com.weather.nimbus.data.weather.network.NetworkClient
-import com.weather.nimbus.data.weather.network.api.OpenWeatherServiceImpl
+import com.weather.nimbus.data.weather.NetworkClient
+import com.weather.nimbus.data.weather.source.service.OpenWeatherServiceImpl
+import com.weather.nimbus.domain.cityList.CityListRepository
+import com.weather.nimbus.domain.cityList.CityListUseCase
 import com.weather.nimbus.domain.location.LocationHelper
 import com.weather.nimbus.domain.location.LocationRepository
 import com.weather.nimbus.domain.location.LocationUseCase
@@ -34,16 +35,13 @@ class MainActivity : ComponentActivity() {
 
         setupDataLayer()
         setupLocationServices()
+        initialDataLoad()
+        retrieveCityListFromJson()
 
         enableEdgeToEdge()
         setContent {
             MainDashboard(weatherViewModel = weatherViewModel)
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        weatherViewModel.getCurrentWeather()
     }
 
     @Deprecated("Deprecated in Java")
@@ -59,7 +57,7 @@ class MainActivity : ComponentActivity() {
             grantResults
         ) { isGranted ->
             if (isGranted) {
-                weatherViewModel.getCurrentWeather()
+                initialDataLoad()
             } else {
                 Log.d("Location", "Location permission denied")
             }
@@ -74,7 +72,13 @@ class MainActivity : ComponentActivity() {
         val locationRepository = LocationRepository(locationProvider)
         val locationUseCase = LocationUseCase(locationRepository)
 
-        val factory = WeatherViewModelFactory(openWeatherService, locationUseCase)
+        val cityListRepository = CityListRepository(context = this)
+        val cityListUseCase = CityListUseCase(cityListRepository)
+
+        val factory = WeatherViewModelFactory(
+            openWeatherService,
+            locationUseCase,
+            cityListUseCase)
         weatherViewModel = ViewModelProvider(this, factory)[WeatherViewModel::class.java]
     }
 
@@ -83,18 +87,12 @@ class MainActivity : ComponentActivity() {
         locationHelper.requestLocationPermission(this)
     }
 
-    private fun loadCityListJson() {
-        Log.d("CityList", "File exists: ${assets.list("")?.contains("CityList.json")}")
-        try {
-            val json = applicationContext.assets
-                .open("CityList.json")
-                .bufferedReader()
-                .use { it.readText() }
-            weatherViewModel.loadCityData(json)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Log.e("CityList", "Failed to load city list JSON: ${e.message}")
-        }
+    private fun initialDataLoad() {
+        weatherViewModel.getCurrentWeather()
+    }
+
+    private fun retrieveCityListFromJson() {
+        weatherViewModel.loadCityData()
     }
 }
 

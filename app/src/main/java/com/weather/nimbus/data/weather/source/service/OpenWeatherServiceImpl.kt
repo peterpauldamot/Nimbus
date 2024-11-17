@@ -1,13 +1,14 @@
 /*
  * Created by Peter Paul Damot on 11-09-2024
  * Copyright (c) 2024. All rights reserved.
- * Last modified on 11-17-2024.
+ * Last modified on 11-18-2024.
  */
 
-package com.weather.nimbus.data.weather.network.api
+package com.weather.nimbus.data.weather.source.service
 
 import com.weather.nimbus.data.weather.model.CurrentWeatherResponse
 import com.weather.nimbus.data.weather.model.FiveDayForecastResponse
+import com.weather.nimbus.data.weather.source.api.OpenWeatherAPI
 
 class OpenWeatherServiceImpl(private val openWeatherAPI: OpenWeatherAPI) : OpenWeatherService {
     companion object {

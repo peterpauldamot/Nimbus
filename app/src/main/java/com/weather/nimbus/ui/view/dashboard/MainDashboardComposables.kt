@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.input.clearText
 import androidx.compose.foundation.text.input.rememberTextFieldState
@@ -63,9 +64,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.weather.nimbus.R
-import com.weather.nimbus.data.weather.model.weather.CurrentWeatherResponse
+import com.weather.nimbus.data.cityList.model.CityListResponse
+import com.weather.nimbus.data.weather.model.CurrentWeatherResponse
 import com.weather.nimbus.ui.theme.NimbusTheme
 import com.weather.nimbus.ui.viewmodel.WeatherViewModel
+import kotlin.math.exp
 import kotlin.math.roundToInt
 
 @Composable
@@ -112,7 +115,8 @@ fun MainDashboard(weatherViewModel: WeatherViewModel) {
                         .fillMaxWidth()
                         .height(56.dp)
                         .zIndex(1f) // Ensures this element appears above others
-                        .clickable { showSearchBar = false }
+                        .clickable { showSearchBar = false },
+                    cityList = cityData
                 )
             }
         }
@@ -164,7 +168,8 @@ fun MyTopBar(
 @Composable
 fun LocationSearchBar(
     onClose: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    cityList: List<CityListResponse?>
 ) {
     val textFieldState = rememberTextFieldState()
     var expanded by rememberSaveable { mutableStateOf(false) }
@@ -209,34 +214,43 @@ fun LocationSearchBar(
             expanded = expanded,
             onExpandedChange = { expanded = it }
         ) {
-            LazyColumn(
-                modifier = Modifier
-                    .verticalScroll(rememberScrollState())
-                    .height(250.dp)
-            ) {
-                items(10) { idx ->
-                    val resultText = "Manila"
-                    ListItem(
-                        headlineContent = { Text(text = resultText, color = Color.Black) },
-                        supportingContent = { Text("PH") },
-                        leadingContent = {
-                            Icon(
-                                Icons.Filled.AddLocation,
-                                contentDescription = null
-                            )
-                        },
-                        colors = ListItemDefaults.colors(containerColor = Color.White),
-                        modifier = Modifier
-                            .clickable {
-                                textFieldState.setTextAndPlaceCursorAtEnd(resultText)
-                                expanded = false
-                                onClose()
-                            }
-                            .fillMaxWidth()
-                            .padding(
-                                horizontal = 16.dp, vertical = 4.dp
-                            )
-                    )
+            val filteredCities = if (cityList.isNotEmpty() && textFieldState.text.length >= 3) {
+                cityList.filter {
+                    it?.name?.contains(textFieldState.text, ignoreCase = true) ?: false
+                }
+            } else {
+                emptyList()
+            }
+
+            if (filteredCities.isNotEmpty()) {
+                LazyColumn(
+                    modifier = Modifier
+                        .verticalScroll(rememberScrollState())
+                        .height(250.dp)
+                ) {
+                    items(filteredCities) { city ->
+                        ListItem(
+                            headlineContent = { city?.let { Text(text = it.name, color = Color.Black) } },
+                            supportingContent = { city?.let { Text(it.country) } },
+                            leadingContent = {
+                                Icon(
+                                    Icons.Filled.AddLocation,
+                                    contentDescription = null
+                                )
+                            },
+                            colors = ListItemDefaults.colors(containerColor = Color.White),
+                            modifier = Modifier
+                                .clickable {
+                                    city?.let { textFieldState.setTextAndPlaceCursorAtEnd(it.name) }
+                                    expanded = false
+                                    onClose()
+                                }
+                                .fillMaxWidth()
+                                .padding(
+                                    horizontal = 16.dp, vertical = 4.dp
+                                )
+                        )
+                    }
                 }
             }
         }
