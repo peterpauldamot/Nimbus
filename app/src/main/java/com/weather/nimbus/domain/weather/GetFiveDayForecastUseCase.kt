@@ -10,7 +10,7 @@ import com.weather.nimbus.data.weather.model.FiveDayForecastResponse
 import com.weather.nimbus.data.weather.source.repository.OpenWeatherRepository
 
 class GetFiveDayForecastUseCase(private val weatherRepository: OpenWeatherRepository) {
-    suspend operator fun invoke(latitude: String, longitude: String): FiveDayForecastResponse {
+    suspend operator fun invoke(latitude: String, longitude: String): Result<FiveDayForecastResponse> {
         return weatherRepository.getFiveDayForecast(latitude, longitude)
     }
 }

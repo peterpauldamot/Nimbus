@@ -71,13 +71,20 @@ import com.weather.nimbus.presentation.viewmodel.WeatherViewModel
 import kotlin.math.roundToInt
 
 @Composable
-fun MainDashboard(weatherViewModel: WeatherViewModel) {
+fun MainDashboardComposables(weatherViewModel: WeatherViewModel) {
     // Collect the weather data and error states as State objects
     val weatherData by weatherViewModel.weatherData.collectAsState()
     val forecastData by weatherViewModel.forecastData.collectAsState()
     val cityData by weatherViewModel.cityData.collectAsState()
     val errorState by weatherViewModel.errorState.collectAsState()
     var showSearchBar by rememberSaveable { mutableStateOf(false) }
+
+    val onCitySelected: (CitiesResponse) -> Unit = { city ->
+        weatherViewModel.getCurrentWeatherOnCity(
+            lat = city.coordinates?.latitude,
+            long = city.coordinates?.longitude
+        )
+    }
 
     NimbusTheme {
         Surface(
@@ -110,6 +117,7 @@ fun MainDashboard(weatherViewModel: WeatherViewModel) {
             if (showSearchBar) {
                 LocationSearchBar(
                     onClose = { showSearchBar = false },
+                    onCitySelected = onCitySelected,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp)
@@ -167,6 +175,7 @@ fun MyTopBar(
 @Composable
 fun LocationSearchBar(
     onClose: () -> Unit,
+    onCitySelected: (city: CitiesResponse) -> Unit,
     modifier: Modifier = Modifier,
     cityList: List<CitiesResponse?>
 ) {
@@ -240,9 +249,12 @@ fun LocationSearchBar(
                             colors = ListItemDefaults.colors(containerColor = Color.White),
                             modifier = Modifier
                                 .clickable {
-                                    city?.let { textFieldState.setTextAndPlaceCursorAtEnd(it.name) }
-                                    expanded = false
-                                    onClose()
+                                    city?.let {
+                                        textFieldState.setTextAndPlaceCursorAtEnd(it.name)
+                                        onCitySelected(it)
+                                        expanded = false
+                                        onClose()
+                                    }
                                 }
                                 .fillMaxWidth()
                                 .padding(

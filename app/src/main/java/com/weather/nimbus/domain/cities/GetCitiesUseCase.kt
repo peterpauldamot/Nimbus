@@ -10,7 +10,7 @@ import com.weather.nimbus.data.cities.model.CitiesResponse
 import com.weather.nimbus.data.cities.source.CitiesRepository
 
 class GetCitiesUseCase(private val citiesRepository: CitiesRepository) {
-    suspend operator fun invoke(): List<CitiesResponse> {
+    suspend operator fun invoke(): Result<List<CitiesResponse>> {
         return citiesRepository.getCities()
     }
 }

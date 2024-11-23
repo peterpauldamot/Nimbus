@@ -13,27 +13,24 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import com.weather.nimbus.domain.location.LocationHelper
-import com.weather.nimbus.presentation.view.dashboard.MainDashboard
+import com.weather.nimbus.presentation.view.dashboard.MainDashboardComposables
 import com.weather.nimbus.presentation.viewmodel.WeatherViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainDashboard : ComponentActivity() {
-    private val weatherViewModel: WeatherViewModel by viewModels()
     @Inject
     lateinit var locationHelper: LocationHelper
+    private val weatherViewModel: WeatherViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        setupLocationServices()
         initialDataLoad()
-        retrieveCityListFromJson()
 
         enableEdgeToEdge()
         setContent {
-            MainDashboard(weatherViewModel = weatherViewModel)
+            MainDashboardComposables(weatherViewModel = weatherViewModel)
         }
     }
 
@@ -57,15 +54,9 @@ class MainDashboard : ComponentActivity() {
         }
     }
 
-    private fun setupLocationServices() {
-        locationHelper.requestLocationPermission(this)
-    }
-
     private fun initialDataLoad() {
+        locationHelper.requestLocationPermission(this)
         weatherViewModel.getCurrentWeather()
-    }
-
-    private fun retrieveCityListFromJson() {
         weatherViewModel.getCityData()
     }
 }

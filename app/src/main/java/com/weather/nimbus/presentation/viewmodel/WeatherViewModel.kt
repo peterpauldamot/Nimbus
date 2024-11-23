@@ -1,7 +1,7 @@
 /*
  * Created by Peter Paul Damot on 11-10-2024
  * Copyright (c) 2024. All rights reserved.
- * Last modified on 11-17-2024.
+ * Last modified on 11-23-2024.
  */
 
 package com.weather.nimbus.presentation.viewmodel
@@ -43,49 +43,94 @@ class WeatherViewModel @Inject constructor(
 
     fun getCurrentWeather() {
         viewModelScope.launch {
-            try { // TODO: Replace with Run-catch
-                Log.d("API", "Retrieving Location")
-                val location = getCurrentLocation()
-                location?.let {
-                    Log.d("API", "Calling getCurrentWeather")
-                    val response = getCurrentWeather(
-                        latitude = it.latitude.toString(),
-                        longitude = it.longitude.toString()
-                    )
-                    _weatherData.value = response
-                    Log.d("API", "Weather data updated: $response")
-                } ?: run {
-                    _errorState.value = "Location not found"
-                    Log.e("API", "Error fetching weather data: No Location")
+            val location = getCurrentLocation()
+            location?.let {
+                val latitude = it.latitude.toString()
+                val longitude = it.longitude.toString()
+
+                Log.d("WeatherViewModel",
+                    "Fetching weather data for latitude: $latitude, longitude: $longitude")
+                val result = runCatching {
+                    getCurrentWeather(latitude, longitude)
                 }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                _errorState.value = e.message
-                Log.e("API", "Error fetching weather data:", e)
+
+                result.onSuccess { response ->
+                    _weatherData.value = response.getOrNull()
+                    Log.d("WeatherViewModel", "Updated weatherData value.")
+                }.onFailure { exception ->
+                    exception.printStackTrace()
+                    Log.e("WeatherViewModel", "Error fetching weather data.")
+                }
+            }?: run {
+                _errorState.value = "Location not found"
+                Log.e("WeatherViewModel", "Error fetching location: Location is null")
             }
         }
     }
 
     fun getForecastWeather(lat: String, long: String, key: String) {
-        Log.d("API", "Executing getForecastWeather with lat:$lat, long:$long")
         viewModelScope.launch {
-            try {
-                val response = getFiveDayForecast(
-                    latitude = lat,
-                    longitude = long)
-                _forecastData.value = response
-            } catch (e: Exception) {
-                e.printStackTrace()
-                _errorState.value = e.message
-                Log.e("API", "Error fetching forecast data:", e)
+            val location = getCurrentLocation()
+            location?.let {
+                val latitude = it.latitude.toString()
+                val longitude = it.longitude.toString()
+
+                Log.d("WeatherViewModel",
+                    "Fetching forecast data for latitude: $latitude, longitude: $longitude")
+                val result = runCatching {
+                    getFiveDayForecast(latitude, longitude)
+                }
+
+                result.onSuccess { response ->
+                    _forecastData.value = response.getOrNull()
+                    Log.d("WeatherViewModel", "Updated forecastData value.")
+                }.onFailure { exception ->
+                    exception.printStackTrace()
+                    Log.e("WeatherViewModel", "Error forecast weather data.")
+                }
+            }?: run {
+                _errorState.value = "Location not found"
+                Log.e("WeatherViewModel", "Error fetching location: Location is null")
+            }
+        }
+    }
+
+    fun getCurrentWeatherOnCity(lat: Double?, long: Double?) {
+        val latitude = lat.toString()
+        val longitude = long.toString()
+        if (lat != null && long != null) {
+            viewModelScope.launch {
+                Log.d("WeatherViewModel",
+                    "Fetching weather data for latitude: $latitude, longitude: $longitude")
+                val result = runCatching {
+                    getCurrentWeather(latitude, longitude)
+                }
+
+                result.onSuccess { response ->
+                    _weatherData.value = response.getOrNull()
+                    Log.d("WeatherViewModel", "Updated weatherData value.")
+                }.onFailure { exception ->
+                    exception.printStackTrace()
+                    Log.e("WeatherViewModel", "Error fetching weather data.")
+                }
             }
         }
     }
 
     fun getCityData() {
         viewModelScope.launch {
-            val cityList = getCities()
-            _cityData.value = cityList
+            val result = runCatching {
+                Log.d("WeatherViewModel", "Fetching cities...")
+                getCities()
+            }
+
+            result.onSuccess { json ->
+                _cityData.value = json.getOrThrow()
+                Log.d("WeatherViewModel", "Updated cityData value.")
+            }.onFailure { exception ->
+                exception.printStackTrace()
+                Log.e("WeatherViewModel", "Error fetching city data.")
+            }
         }
     }
 }

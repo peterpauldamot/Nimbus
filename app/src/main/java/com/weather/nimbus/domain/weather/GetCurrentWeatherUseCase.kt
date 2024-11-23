@@ -10,7 +10,7 @@ import com.weather.nimbus.data.weather.model.CurrentWeatherResponse
 import com.weather.nimbus.data.weather.source.repository.OpenWeatherRepository
 
 class GetCurrentWeatherUseCase(private val weatherRepository: OpenWeatherRepository) {
-    suspend operator fun invoke(latitude: String, longitude: String): CurrentWeatherResponse {
+    suspend operator fun invoke(latitude: String, longitude: String): Result<CurrentWeatherResponse> {
         return weatherRepository.getCurrentWeather(latitude, longitude)
     }
 }

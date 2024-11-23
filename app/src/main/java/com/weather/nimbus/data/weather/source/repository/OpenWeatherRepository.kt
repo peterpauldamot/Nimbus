@@ -13,10 +13,10 @@ interface OpenWeatherRepository {
     suspend fun getCurrentWeather(
         latitude: String,
         longitude: String
-    ): CurrentWeatherResponse
+    ): Result<CurrentWeatherResponse>
 
     suspend fun getFiveDayForecast(
         latitude: String,
         longitude: String
-    ): FiveDayForecastResponse
+    ): Result<FiveDayForecastResponse>
 }

@@ -6,6 +6,7 @@
 
 package com.weather.nimbus.data.weather.source.repository
 
+import android.util.Log
 import com.weather.nimbus.data.weather.model.CurrentWeatherResponse
 import com.weather.nimbus.data.weather.model.FiveDayForecastResponse
 import com.weather.nimbus.data.weather.source.api.OpenWeatherAPI
@@ -21,22 +22,38 @@ class OpenWeatherRepositoryImpl @Inject constructor(
     override suspend fun getCurrentWeather(
         latitude: String,
         longitude: String
-    ): CurrentWeatherResponse {
-        return openWeatherAPI.getCurrentWeather(
-            latitude = latitude,
-            longitude = longitude,
-            apiKey = OPEN_WEATHER_API_KEY
-        )
+    ): Result<CurrentWeatherResponse> {
+        return runCatching {
+            Log.d("OpenWeatherRepository", "Fetching current weather data...")
+            val response = openWeatherAPI.getCurrentWeather(
+                latitude = latitude,
+                longitude = longitude,
+                apiKey = OPEN_WEATHER_API_KEY
+            )
+            Log.d("OpenWeatherRepository", "Success fetching current weather data: $response")
+            Result.success(response)
+        }.getOrElse { exception ->
+            Log.e("OpenWeatherRepository", "Error fetching current weather data", exception)
+            Result.failure(exception)
+        }
     }
 
     override suspend fun getFiveDayForecast(
         latitude: String,
         longitude: String
-    ): FiveDayForecastResponse {
-        return openWeatherAPI.getFiveDayForecast(
-            latitude = latitude,
-            longitude = longitude,
-            apiKey = OPEN_WEATHER_API_KEY
-        )
+    ): Result<FiveDayForecastResponse> {
+        return runCatching {
+            Log.d("OpenWeatherRepository", "Fetching forecast weather data...")
+            val response = openWeatherAPI.getFiveDayForecast(
+                latitude = latitude,
+                longitude = longitude,
+                apiKey = OPEN_WEATHER_API_KEY
+            )
+            Log.d("OpenWeatherRepository", "Success fetching forecast weather data: $response")
+            Result.success(response)
+        }.getOrElse { exception ->
+            Log.e("OpenWeatherRepository", "Error fetching forecast weather data", exception)
+            Result.failure(exception)
+        }
     }
 }
