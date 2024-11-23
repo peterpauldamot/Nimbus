@@ -13,8 +13,9 @@ import android.content.pm.PackageManager
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import javax.inject.Inject
 
-class LocationHelper(
+class LocationHelper @Inject constructor(
     private val context: Context
 ) {
     companion object {

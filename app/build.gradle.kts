@@ -9,6 +9,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.google.hilt)
+    kotlin("kapt")
 }
 
 android {
@@ -64,7 +66,9 @@ dependencies {
     implementation(libs.okhttp.logging.interceptor)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.google.android.location)
-    implementation ("com.google.code.gson:gson:2.8.9")
+    implementation (libs.google.gson)
+    implementation (libs.google.hilt.android)
+    kapt(libs.google.hilt.compiler)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
