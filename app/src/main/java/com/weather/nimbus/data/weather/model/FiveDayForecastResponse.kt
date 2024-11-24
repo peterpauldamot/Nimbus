@@ -19,13 +19,13 @@ data class FiveDayForecastResponse(
     data class Forecast(
         @SerialName("dt") val timeOfForecast: Int,
         @SerialName("main") val main: Main,
-        @SerialName("weather") val weather: Weather,
+        @SerialName("weather") val weather: List<Weather>,
         @SerialName("clouds") val clouds: Clouds,
         @SerialName("wind") val wind: Wind,
         @SerialName("visibility") val visibility: Int,
         @SerialName("pop") val precipitationProbability: Double,
-        @SerialName("rain") val rain: PrecipitationDuration,
-        @SerialName("snow") val snow: PrecipitationDuration,
+        @SerialName("rain") val rain: PrecipitationDuration? = null,
+        @SerialName("snow") val snow: PrecipitationDuration? = null,
         @SerialName("sys") val sys: Sys,
         @SerialName("dt_txt") val date: String
 

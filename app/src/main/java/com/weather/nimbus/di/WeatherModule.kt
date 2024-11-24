@@ -10,6 +10,7 @@ import com.weather.nimbus.data.weather.source.api.OpenWeatherAPI
 import com.weather.nimbus.data.weather.source.repository.OpenWeatherRepository
 import com.weather.nimbus.data.weather.source.repository.OpenWeatherRepositoryImpl
 import com.weather.nimbus.data.weather.source.transformer.CurrentWeatherResponseTransformer
+import com.weather.nimbus.data.weather.source.transformer.FiveDayForecastResponseTransformer
 import com.weather.nimbus.domain.weather.GetCurrentWeatherUseCase
 import com.weather.nimbus.domain.weather.GetFiveDayForecastUseCase
 import dagger.Module
@@ -25,9 +26,13 @@ object WeatherModule {
     @Singleton
     fun provideOpenWeatherRepository(
         openWeatherAPI: OpenWeatherAPI,
-        currentWeatherTransformer: CurrentWeatherResponseTransformer
+        currentWeatherTransformer: CurrentWeatherResponseTransformer,
+        fiveDayForecastResponseTransformer: FiveDayForecastResponseTransformer
     ): OpenWeatherRepository {
-        return OpenWeatherRepositoryImpl(openWeatherAPI, currentWeatherTransformer)
+        return OpenWeatherRepositoryImpl(
+            openWeatherAPI,
+            currentWeatherTransformer,
+            fiveDayForecastResponseTransformer)
     }
 
     @Provides
@@ -50,5 +55,11 @@ object WeatherModule {
     @Singleton
     fun provideCurrentWeatherResponseTransformer(): CurrentWeatherResponseTransformer {
         return CurrentWeatherResponseTransformer()
+    }
+
+    @Provides
+    @Singleton
+    fun provideFiveDayForecastResponseTransformer(): FiveDayForecastResponseTransformer {
+        return FiveDayForecastResponseTransformer()
     }
 }

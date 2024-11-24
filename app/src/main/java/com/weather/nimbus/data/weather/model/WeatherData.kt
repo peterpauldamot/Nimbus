@@ -6,10 +6,7 @@
 
 package com.weather.nimbus.data.weather.model
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
-
-data class CurrentWeatherData(
+data class WeatherData(
     val cityName: String,
     val date: Int,
     val timezone: Int,

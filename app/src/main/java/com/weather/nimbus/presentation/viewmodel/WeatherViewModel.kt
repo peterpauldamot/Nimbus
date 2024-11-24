@@ -10,8 +10,9 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.weather.nimbus.data.cities.model.CitiesResponse
-import com.weather.nimbus.data.weather.model.CurrentWeatherData
+import com.weather.nimbus.data.weather.model.WeatherData
 import com.weather.nimbus.data.weather.model.FiveDayForecastResponse
+import com.weather.nimbus.data.weather.model.ForecastData
 import com.weather.nimbus.domain.cities.GetCitiesUseCase
 import com.weather.nimbus.domain.location.GetCurrentLocationUseCase
 import com.weather.nimbus.domain.weather.GetCurrentWeatherUseCase
@@ -29,11 +30,11 @@ class WeatherViewModel @Inject constructor(
     private val getCurrentLocation: GetCurrentLocationUseCase,
     private val getCities: GetCitiesUseCase
 ) : ViewModel() {
-    private val _weatherData = MutableStateFlow<CurrentWeatherData?>(null)
-    val weatherData: StateFlow<CurrentWeatherData?> = _weatherData
+    private val _weatherData = MutableStateFlow<WeatherData?>(null)
+    val weatherData: StateFlow<WeatherData?> = _weatherData
 
-    private val _forecastData = MutableStateFlow<FiveDayForecastResponse?>(null)
-    val forecastData: StateFlow<FiveDayForecastResponse?> = _forecastData
+    private val _forecastData = MutableStateFlow<ForecastData?>(null)
+    val forecastData: StateFlow<ForecastData?> = _forecastData
 
     private val _cityData = MutableStateFlow<List<CitiesResponse>>(emptyList())
     val cityData: StateFlow<List<CitiesResponse?>> = _cityData

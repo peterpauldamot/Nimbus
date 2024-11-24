@@ -31,9 +31,9 @@ val Typography = Typography(
     ),
     displaySmall = TextStyle(
         fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Bold,
-        fontSize = 22.sp,  // Smaller title text, still bold
-        lineHeight = 28.sp,
+        fontWeight = FontWeight.Normal,
+        fontSize = 18.sp,  // Smaller title text, still bold
+        lineHeight = 20.sp,
         letterSpacing = (-0.2).sp
     ),
 

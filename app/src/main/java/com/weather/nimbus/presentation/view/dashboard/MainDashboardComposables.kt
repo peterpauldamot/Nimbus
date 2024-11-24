@@ -64,15 +64,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.weather.nimbus.R
 import com.weather.nimbus.data.cities.model.CitiesResponse
-import com.weather.nimbus.data.weather.model.CurrentWeatherData
+import com.weather.nimbus.data.weather.model.WeatherData
 import com.weather.nimbus.data.weather.model.CurrentWeatherResponse
+import com.weather.nimbus.data.weather.model.ForecastData
 import com.weather.nimbus.presentation.theme.AfternoonColor
 import com.weather.nimbus.presentation.theme.EveningColor
 import com.weather.nimbus.presentation.theme.LateMorningColor
@@ -119,12 +118,9 @@ fun MainDashboardComposables(weatherViewModel: WeatherViewModel) {
                         weather = weatherData?.weather,
                         cityName = weatherData?.cityName ?: "Current Location"
                     )
-                    Spacer(modifier = Modifier.height(120.dp))
-
-                    Spacer(modifier = Modifier.height(40.dp))
-
-                    FiveDayDailyForecast()
-                    Spacer(modifier = Modifier.height(102.dp))
+                    Spacer(modifier = Modifier.height(160.dp))
+                    FiveDayDailyForecast(forecastData)
+                    Spacer(modifier = Modifier.height(64.dp))
 
                     FiveDayForecastButton()
             }
@@ -277,8 +273,8 @@ fun LocationSearchBar(
 
 @Composable
 fun TemperatureHeader(
-    mainTemp: CurrentWeatherData.Main?,
-    weather: CurrentWeatherData.Weather?,
+    mainTemp: WeatherData.Main?,
+    weather: WeatherData.Weather?,
     cityName: String
 ) {
     val temperature = convertToCelsius(mainTemp?.temperature)
@@ -295,14 +291,21 @@ fun TemperatureHeader(
         Column (
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            MakeWeatherStatusImage(weather?.weatherStatus)
-            Spacer(modifier = Modifier.height(8.dp))
-
             Text(
                 text = cityName,
                 style = MaterialTheme.typography.displayMedium,
                 color = MaterialTheme.colorScheme.onPrimary
             )
+            Spacer(modifier = Modifier.height(16.dp))
+            MakeWeatherStatusImage(weather?.weatherStatus)
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = "$description",
+                style = MaterialTheme.typography.displayMedium,
+                color = MaterialTheme.colorScheme.onPrimary
+            )
+            Spacer(modifier = Modifier.height(32.dp))
+
 
             Text(
                 text = stringResource(R.string.temperature_degrees_celsius, temperature),
@@ -318,16 +321,9 @@ fun TemperatureHeader(
                         }
                     }
             )
-
-            Text(
-                text = "$description",
-                style = MaterialTheme.typography.displayMedium,
-                color = MaterialTheme.colorScheme.onPrimary
-            )
-
             Text(
                 text = stringResource(R.string.temperature_feels_like, feelsLike),
-                style = MaterialTheme.typography.displayMedium,
+                style = MaterialTheme.typography.displaySmall,
                 color = MaterialTheme.colorScheme.onPrimary
             )
         }
@@ -353,9 +349,10 @@ fun OtherDetails(main: CurrentWeatherResponse.Main?,
     }
 }
 
-@Preview
 @Composable
-fun FiveDayDailyForecast() {
+fun FiveDayDailyForecast(
+    forecast: ForecastData?
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -366,8 +363,18 @@ fun FiveDayDailyForecast() {
         ),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        repeat(5) {
-            ForecastBox("Thu", "Sunny", "19° / 26°")
+        forecast?.weatherForecast?.map { dailyForecast ->
+            val minTemperature = convertToCelsius(dailyForecast.averageMinTemperature)
+            val maxTemperature = convertToCelsius(dailyForecast.averageMaxTemperature)
+            ForecastBox(
+                day = dailyForecast.dayOfWeek,
+                icon = "Sunny", //TODO: Add assets for icons
+                minMaxTemp = stringResource(
+                    R.string.temperature_min_max,
+                    minTemperature,
+                    maxTemperature
+                )
+            )
         }
     }
 }
@@ -381,7 +388,8 @@ private fun ForecastBox(
     Box (modifier = Modifier
         .background(
             color = MaterialTheme.colorScheme.secondary,
-            shape = RoundedCornerShape(4.dp))
+            shape = RoundedCornerShape(18.dp)
+        )
         .padding(8.dp)
     ) {
         Column (horizontalAlignment = Alignment.CenterHorizontally) {
