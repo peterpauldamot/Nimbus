@@ -68,7 +68,7 @@ class WeatherViewModel @Inject constructor(
         }
     }
 
-    fun getForecastWeather(lat: String, long: String, key: String) {
+    fun getForecastWeather() {
         viewModelScope.launch {
             val location = getCurrentLocation()
             location?.let {

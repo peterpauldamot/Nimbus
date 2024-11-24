@@ -7,5 +7,5 @@
 <resources>
     <string name="app_name">Nimbus</string>
     <string name="temperature_feels_like">Feels Like %1$s°C</string>
-    <string name="temperature_degrees_celsius">%1$s°C</string>
+    <string name="temperature_degrees_celsius">\ %1$s°</string>
 </resources>

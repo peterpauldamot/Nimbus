@@ -16,17 +16,17 @@ import androidx.compose.ui.unit.sp
 val Typography = Typography(
     // Display Text Styles (for large titles)
     displayLarge = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Bold,
-        fontSize = 34.sp,  // Large, bold for prominent weather condition titles
-        lineHeight = 40.sp,
+        fontFamily = FontFamily.SansSerif,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 102.sp,  // Large, bold for prominent weather condition titles
+        lineHeight = 104.sp,
         letterSpacing = (-0.5).sp
     ),
     displayMedium = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Bold,
+        fontFamily = FontFamily.SansSerif,
+        fontWeight = FontWeight.Normal,
         fontSize = 28.sp,  // Slightly smaller, still bold for important subheadings
-        lineHeight = 32.sp,
+        lineHeight = 28.sp,
         letterSpacing = (-0.25).sp
     ),
     displaySmall = TextStyle(
