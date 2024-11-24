@@ -10,7 +10,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.weather.nimbus.data.cities.model.CitiesResponse
-import com.weather.nimbus.data.weather.model.CurrentWeatherResponse
+import com.weather.nimbus.data.weather.model.CurrentWeatherData
 import com.weather.nimbus.data.weather.model.FiveDayForecastResponse
 import com.weather.nimbus.domain.cities.GetCitiesUseCase
 import com.weather.nimbus.domain.location.GetCurrentLocationUseCase
@@ -29,8 +29,8 @@ class WeatherViewModel @Inject constructor(
     private val getCurrentLocation: GetCurrentLocationUseCase,
     private val getCities: GetCitiesUseCase
 ) : ViewModel() {
-    private val _weatherData = MutableStateFlow<CurrentWeatherResponse?>(null)
-    val weatherData: StateFlow<CurrentWeatherResponse?> = _weatherData
+    private val _weatherData = MutableStateFlow<CurrentWeatherData?>(null)
+    val weatherData: StateFlow<CurrentWeatherData?> = _weatherData
 
     private val _forecastData = MutableStateFlow<FiveDayForecastResponse?>(null)
     val forecastData: StateFlow<FiveDayForecastResponse?> = _forecastData

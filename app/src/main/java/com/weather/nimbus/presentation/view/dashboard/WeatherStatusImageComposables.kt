@@ -39,12 +39,12 @@ import kotlin.random.Random
 fun MakeWeatherStatusImage(weatherStatus: String?) {
     Box(modifier = Modifier.size(200.dp)) {
         when (weatherStatus?.lowercase()) {
-            "sunny" -> SunnyWeatherStatus()
-            "rainy" -> RainyWeatherStatus()
+            "clear" -> SunnyWeatherStatus()
+            "rain" -> RainyWeatherStatus()
             "thunderstorm" -> WeatherStatusTemplateWithImage(R.drawable.weather_status_thunderstorm)
-            "snowy" -> WeatherStatusTemplateWithImage(R.drawable.weather_status_snowy)
-            "windy" -> WeatherStatusTemplateWithImage(R.drawable.weather_status_windy)
-            "foggy" -> WeatherStatusTemplateWithImage(R.drawable.weather_status_foggy)
+            "snow" -> WeatherStatusTemplateWithImage(R.drawable.weather_status_snowy)
+            "atmosphere" -> WeatherStatusTemplateWithImage(R.drawable.weather_status_windy)
+            "clouds" -> WeatherStatusTemplateWithImage(R.drawable.weather_status_foggy)
             else -> SunnyWeatherStatus()
         }
     }

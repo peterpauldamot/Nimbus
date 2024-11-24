@@ -6,11 +6,11 @@
 
 package com.weather.nimbus.domain.weather
 
-import com.weather.nimbus.data.weather.model.CurrentWeatherResponse
+import com.weather.nimbus.data.weather.model.CurrentWeatherData
 import com.weather.nimbus.data.weather.source.repository.OpenWeatherRepository
 
 class GetCurrentWeatherUseCase(private val weatherRepository: OpenWeatherRepository) {
-    suspend operator fun invoke(latitude: String, longitude: String): Result<CurrentWeatherResponse> {
+    suspend operator fun invoke(latitude: String, longitude: String): Result<CurrentWeatherData> {
         return weatherRepository.getCurrentWeather(latitude, longitude)
     }
 }

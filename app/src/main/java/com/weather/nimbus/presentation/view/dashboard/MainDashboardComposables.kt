@@ -71,6 +71,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.weather.nimbus.R
 import com.weather.nimbus.data.cities.model.CitiesResponse
+import com.weather.nimbus.data.weather.model.CurrentWeatherData
 import com.weather.nimbus.data.weather.model.CurrentWeatherResponse
 import com.weather.nimbus.presentation.theme.AfternoonColor
 import com.weather.nimbus.presentation.theme.EveningColor
@@ -115,7 +116,7 @@ fun MainDashboardComposables(weatherViewModel: WeatherViewModel) {
                     )
                     TemperatureHeader(
                         mainTemp = weatherData?.main,
-                        weather = weatherData?.weather?.first(),
+                        weather = weatherData?.weather,
                         cityName = weatherData?.cityName ?: "Current Location"
                     )
                     Spacer(modifier = Modifier.height(120.dp))
@@ -276,8 +277,8 @@ fun LocationSearchBar(
 
 @Composable
 fun TemperatureHeader(
-    mainTemp: CurrentWeatherResponse.Main?,
-    weather: CurrentWeatherResponse.Weather?,
+    mainTemp: CurrentWeatherData.Main?,
+    weather: CurrentWeatherData.Weather?,
     cityName: String
 ) {
     val temperature = convertToCelsius(mainTemp?.temperature)
@@ -294,7 +295,7 @@ fun TemperatureHeader(
         Column (
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            MakeWeatherStatusImage("Snowy")
+            MakeWeatherStatusImage(weather?.weatherStatus)
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(

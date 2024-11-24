@@ -96,7 +96,7 @@ fun NimbusTheme(
     }
 
     MaterialTheme(
-        colorScheme = SunnyColorScheme,
+        colorScheme = DrizzleColorScheme,
         typography = Typography,
         content = content
     )
