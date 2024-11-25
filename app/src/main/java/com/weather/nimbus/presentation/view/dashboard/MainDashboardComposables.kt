@@ -64,12 +64,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.weather.nimbus.R
-import com.weather.nimbus.common.model.WeatherStatus
+import com.weather.nimbus.common.source.LoadingOverlay
 import com.weather.nimbus.data.cities.model.CitiesResponse
 import com.weather.nimbus.data.weather.model.WeatherData
 import com.weather.nimbus.data.weather.model.CurrentWeatherResponse
@@ -94,10 +93,17 @@ fun MainDashboardComposables(weatherViewModel: WeatherViewModel) {
     val forecastData by weatherViewModel.forecastData.collectAsState()
     val cityData by weatherViewModel.cityData.collectAsState()
     val errorState by weatherViewModel.errorState.collectAsState()
+    val isLoading = weatherViewModel.isLoading.collectAsState().value
     var showSearchBar by rememberSaveable { mutableStateOf(false) }
 
+    //TODO: Make a function to combine API calls and fetch asynchronously
     val onCitySelected: (CitiesResponse) -> Unit = { city ->
         weatherViewModel.getCurrentWeatherOnCity(
+            lat = city.coordinates?.latitude,
+            long = city.coordinates?.longitude
+        )
+
+        weatherViewModel.getFiveDayForecastOnCity(
             lat = city.coordinates?.latitude,
             long = city.coordinates?.longitude
         )
@@ -139,6 +145,8 @@ fun MainDashboardComposables(weatherViewModel: WeatherViewModel) {
                     cityList = cityData
                 )
             }
+
+            LoadingOverlay(isLoading, MaterialTheme.colorScheme.background)
         }
     }
 }
@@ -268,6 +276,15 @@ fun LocationSearchBar(
                         )
                     }
                 }
+            } else {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(220.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text("Loading Suggestions...")
+                }
             }
         }
     }
@@ -331,7 +348,8 @@ fun TemperatureHeader(
 
 @Composable
 fun OtherDetails(main: CurrentWeatherResponse.Main?,
-                 wind: CurrentWeatherResponse.Wind?) {
+                 wind: CurrentWeatherResponse.Wind?
+) {
     val humidity = main?.humidity
     val windSpeed = wind?.speed
 
@@ -363,8 +381,8 @@ fun FiveDayDailyForecast(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         forecast?.weatherForecast?.map { dailyForecast ->
-            val minTemperature = convertToCelsius(dailyForecast.averageMinTemperature)
-            val maxTemperature = convertToCelsius(dailyForecast.averageMaxTemperature)
+            val minTemperature = convertToCelsius(dailyForecast.minTemperature)
+            val maxTemperature = convertToCelsius(dailyForecast.maxTemperature)
             ForecastBox(
                 day = dailyForecast.dayOfWeek,
                 icon = "Sunny", //TODO: Add assets for icons

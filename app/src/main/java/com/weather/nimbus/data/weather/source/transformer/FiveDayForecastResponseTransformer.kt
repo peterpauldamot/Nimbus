@@ -21,13 +21,13 @@ class FiveDayForecastResponseTransformer {
         val groupedForecast = groupForecastByDate(response.forecast)
 
         val dailyForecasts = groupedForecast.map { (date, dailyForecast) ->
-            val averageMinTemperature = calculateDailyAverageMin(dailyForecast)
-            val averageMaxTemperature = calculateDailyAverageMax(dailyForecast)
+            val minTemperature = getDailyLowestTemperature(dailyForecast)
+            val maxTemperature = getDailyHighestTemperature(dailyForecast)
             val dayOfWeek = getDayOfWeek(date)
             ForecastData.Forecast(
                 date = date,
-                averageMinTemperature = averageMinTemperature,
-                averageMaxTemperature = averageMaxTemperature,
+                minTemperature = minTemperature,
+                maxTemperature = maxTemperature,
                 dayOfWeek = dayOfWeek
             )
         }
@@ -55,6 +55,14 @@ class FiveDayForecastResponseTransformer {
             val timestampSeconds = timestampMilliseconds?.div(1000)?.toInt()
             timestampSeconds ?: 0
         }
+    }
+
+    private fun getDailyLowestTemperature(forecasts: List<FiveDayForecastResponse.Forecast>): Double {
+        return forecasts.map { it.main.minTemperature }.min()
+    }
+
+    private fun getDailyHighestTemperature(forecasts: List<FiveDayForecastResponse.Forecast>): Double {
+        return forecasts.map { it.main.maxTemperature }.max()
     }
 
     private fun calculateDailyAverageMin(forecasts: List<FiveDayForecastResponse.Forecast>): Double {

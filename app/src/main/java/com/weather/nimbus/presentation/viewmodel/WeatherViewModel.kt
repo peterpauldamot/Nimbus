@@ -42,8 +42,12 @@ class WeatherViewModel @Inject constructor(
     private val _errorState = MutableStateFlow<String?>(null)
     val errorState: StateFlow<String?> = _errorState
 
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
+
     fun getCurrentWeather() {
         viewModelScope.launch {
+            _isLoading.value = true
             val location = getCurrentLocation()
             location?.let {
                 val latitude = it.latitude.toString()
@@ -58,19 +62,23 @@ class WeatherViewModel @Inject constructor(
                 result.onSuccess { response ->
                     _weatherData.value = response.getOrNull()
                     Log.d("WeatherViewModel", "Updated weatherData value.")
+                    _isLoading.value = false
                 }.onFailure { exception ->
                     exception.printStackTrace()
                     Log.e("WeatherViewModel", "Error fetching weather data.")
+                    _isLoading.value = false
                 }
             }?: run {
                 _errorState.value = "Location not found"
                 Log.e("WeatherViewModel", "Error fetching location: Location is null")
+                _isLoading.value = false
             }
         }
     }
 
     fun getForecastWeather() {
         viewModelScope.launch {
+            _isLoading.value = true
             val location = getCurrentLocation()
             location?.let {
                 val latitude = it.latitude.toString()
@@ -85,13 +93,16 @@ class WeatherViewModel @Inject constructor(
                 result.onSuccess { response ->
                     _forecastData.value = response.getOrNull()
                     Log.d("WeatherViewModel", "Updated forecastData value.")
+                    _isLoading.value = false
                 }.onFailure { exception ->
                     exception.printStackTrace()
                     Log.e("WeatherViewModel", "Error forecast weather data.")
+                    _isLoading.value = false
                 }
             }?: run {
                 _errorState.value = "Location not found"
                 Log.e("WeatherViewModel", "Error fetching location: Location is null")
+                _isLoading.value = false
             }
         }
     }
@@ -100,6 +111,7 @@ class WeatherViewModel @Inject constructor(
         val latitude = lat.toString()
         val longitude = long.toString()
         if (lat != null && long != null) {
+            _isLoading.value = true
             viewModelScope.launch {
                 Log.d("WeatherViewModel",
                     "Fetching weather data for latitude: $latitude, longitude: $longitude")
@@ -110,9 +122,36 @@ class WeatherViewModel @Inject constructor(
                 result.onSuccess { response ->
                     _weatherData.value = response.getOrNull()
                     Log.d("WeatherViewModel", "Updated weatherData value.")
+                    _isLoading.value = false
                 }.onFailure { exception ->
                     exception.printStackTrace()
                     Log.e("WeatherViewModel", "Error fetching weather data.")
+                    _isLoading.value = false
+                }
+            }
+        }
+    }
+
+    fun getFiveDayForecastOnCity(lat: Double?, long: Double?) {
+        val latitude = lat.toString()
+        val longitude = long.toString()
+        if (lat != null && long != null) {
+            _isLoading.value = true
+            viewModelScope.launch {
+                Log.d("WeatherViewModel",
+                    "Fetching weather data for latitude: $latitude, longitude: $longitude")
+                val result = runCatching {
+                    getFiveDayForecast(latitude, longitude)
+                }
+
+                result.onSuccess { response ->
+                    _forecastData.value = response.getOrNull()
+                    Log.d("WeatherViewModel", "Updated weatherData value.")
+                    _isLoading.value = false
+                }.onFailure { exception ->
+                    exception.printStackTrace()
+                    Log.e("WeatherViewModel", "Error fetching weather data.")
+                    _isLoading.value = false
                 }
             }
         }

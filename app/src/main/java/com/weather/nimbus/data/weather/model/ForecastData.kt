@@ -15,7 +15,7 @@ data class ForecastData(
     data class Forecast(
         val date: Int,
         val dayOfWeek: String,
-        val averageMinTemperature: Double,
-        val averageMaxTemperature: Double
+        val minTemperature: Double,
+        val maxTemperature: Double
     )
 }

@@ -12,7 +12,6 @@ import com.weather.nimbus.data.weather.model.CurrentWeatherResponse
 
 class CurrentWeatherResponseTransformer {
     fun transform(response: CurrentWeatherResponse): WeatherData {
-
         return WeatherData(
             cityName = response.cityName,
             date = response.date,
@@ -30,7 +29,7 @@ class CurrentWeatherResponseTransformer {
             in 300..321 -> WeatherStatus.DRIZZLE
             in 500..531 -> WeatherStatus.RAIN
             in 600..622 -> WeatherStatus.SNOW
-            in 701..781 -> WeatherStatus.THUNDERSTORM
+            in 701..781 -> WeatherStatus.ATMOSPHERE
             in 801..804 -> WeatherStatus.CLOUDS
             else -> WeatherStatus.CLEAR
         }

@@ -12,6 +12,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import com.weather.nimbus.domain.location.LocationHelper
 import com.weather.nimbus.presentation.view.dashboard.MainDashboardComposables
 import com.weather.nimbus.presentation.viewmodel.WeatherViewModel
@@ -26,6 +29,7 @@ class MainDashboard : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         initialDataLoad()
 
         enableEdgeToEdge()
