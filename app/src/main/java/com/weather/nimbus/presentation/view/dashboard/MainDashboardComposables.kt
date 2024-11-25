@@ -64,10 +64,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.weather.nimbus.R
+import com.weather.nimbus.common.model.WeatherStatus
 import com.weather.nimbus.data.cities.model.CitiesResponse
 import com.weather.nimbus.data.weather.model.WeatherData
 import com.weather.nimbus.data.weather.model.CurrentWeatherResponse
@@ -101,7 +103,7 @@ fun MainDashboardComposables(weatherViewModel: WeatherViewModel) {
         )
     }
 
-    NimbusTheme {
+    NimbusTheme(weather = weatherData?.weather?.weatherStatus) {
         Surface(
             modifier = Modifier.fillMaxSize()
         ) {
@@ -279,10 +281,7 @@ fun TemperatureHeader(
 ) {
     val temperature = convertToCelsius(mainTemp?.temperature)
     val feelsLike = convertToCelsius(mainTemp?.feelsLike)
-
     val description = capitalizeFirstLetter(weather?.description)
-    val maxTemperature = convertToCelsius(mainTemp?.maxTemperature)
-    val minTemperature = convertToCelsius(mainTemp?.minTemperature)
 
     Box (
         modifier = Modifier.fillMaxWidth(),
@@ -448,7 +447,7 @@ private fun getGradientForCurrentTheme(backgroundColor: Color): Brush {
     val timeColor = getColorForCurrentTime()
 
     return Brush.verticalGradient(
-        colors = listOf(backgroundColor, timeColor),
+        colors = listOf(timeColor, backgroundColor),
         startY = 0f,
         endY = Float.POSITIVE_INFINITY
     )

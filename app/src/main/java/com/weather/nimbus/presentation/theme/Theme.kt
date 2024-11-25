@@ -22,6 +22,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import com.weather.nimbus.common.model.WeatherStatus
+import com.weather.nimbus.data.weather.model.CurrentWeatherResponse
+import com.weather.nimbus.data.weather.model.WeatherData
 import com.weather.nimbus.presentation.viewmodel.WeatherViewModel
 import java.time.LocalTime
 
@@ -47,7 +50,21 @@ private val LightColorScheme = lightColorScheme(
     */
 )
 
-// Drizzle Color Theme
+private val ThunderstormColorScheme = lightColorScheme(
+    primary = ThunderstormPurple, // ThunderstormPurple
+    secondary = LightningYellow, // LightningYellow
+    tertiary = RainCloudGray, // RainCloudGray
+
+    // Default Colors to Override
+    background = StormyBlueGray, // StormyBlueGray
+    surface = CharcoalDarkGray, // CharcoalDarkGray
+    onPrimary = PureWhite, // Text/icons on primary color
+    onSecondary = DarkShadow, // DarkShadow text/icons on secondary color
+    onTertiary = SoftLightGray, // SoftLightGray text/icons on tertiary color
+    onBackground = SoftLightGray, // SoftLightGray text/icons on background
+    onSurface = SoftLightGray // SoftLightGray text/icons on surface
+)
+
 private val DrizzleColorScheme = lightColorScheme(
     primary = LightRainBlue, // LightRainBlue
     secondary = PaleYellow, // PaleYellow
@@ -63,7 +80,53 @@ private val DrizzleColorScheme = lightColorScheme(
     onSurface = LightGray // LightGray text/icons on surface
 )
 
-private val SunnyColorScheme = lightColorScheme(
+// Define Rainy Color Scheme
+private val RainyColorScheme = lightColorScheme(
+    primary = CoolRainBlue, // Rain accents
+    secondary = AmberYellow, // Highlight color
+    tertiary = CloudyGray, // Secondary highlights
+
+    // Default Colors to Override
+    background = NavyBlue, // Dark rain-themed background
+    surface = DarkSlateBlue, // Slightly lighter for surface elements
+    onPrimary = LightGray, // Text/icons on primary color
+    onSecondary = LightGray, // Text/icons on secondary
+    onTertiary = DarkGray, // Text/icons on tertiary color
+    onBackground = LightGray, // Text/icons on background
+    onSurface = LightGray // Text/icons on surface
+)
+
+private val SnowyColorScheme = lightColorScheme(
+    primary = IcyBlue, // IcyBlue
+    secondary = SnowShadowGray, // SnowShadowGray
+    tertiary = FrostyGray, // FrostyGray
+
+    // Default Colors to Override
+    background = VeryLightGray, // VeryLightGray
+    surface = FrostyGray, // FrostyGray
+    onPrimary = PureWhite, // Text/icons on primary color
+    onSecondary = CharcoalGray, // CharcoalGray text/icons on secondary color
+    onTertiary = MediumGray, // MediumGray text/icons on tertiary color
+    onBackground = CharcoalGray, // CharcoalGray text/icons on background
+    onSurface = MediumGray // MediumGray text/icons on surface
+)
+
+private val AtmosphereColorScheme = lightColorScheme(
+    primary = FadedBlue, // FadedBlue
+    secondary = CloudyHazeGray, // CloudyHazeGray
+    tertiary = PaleMistGray, // PaleMistGray
+
+    // Default Colors to Override
+    background = LightGrayishBlue, // LightGrayishBlue
+    surface = PaleMistGray, // PaleMistGray
+    onPrimary = PureWhite, // Text/icons on primary color
+    onSecondary = CharcoalGray, // CharcoalGray text/icons on secondary color
+    onTertiary = SoftGrayishBlue, // SoftGrayishBlue text/icons on tertiary color
+    onBackground = CharcoalGray, // CharcoalGray text/icons on background
+    onSurface = SmokyGray // SmokyGray text/icons on surface
+)
+
+private val ClearDayColorScheme = lightColorScheme(
     primary = SunnyOrange, // Sunny orange for primary color
     secondary = LightSkyBlue, // Light sky blue for secondary color
     tertiary = SoftOrange, // Soft orange for accents
@@ -78,25 +141,43 @@ private val SunnyColorScheme = lightColorScheme(
     onSurface = PureWhite // White text/icons on gold surfaces
 )
 
+private val CloudyColorScheme = lightColorScheme(
+    primary = SoftBlueGray, // SoftBlueGray for subtle accents
+    secondary = CloudWhite, // CloudWhite for highlights
+    tertiary = LightCloudGray, // LightCloudGray to complement the cloudy mood
+
+    // Default Colors to Override
+    background = OvercastGray, // OvercastGray for the overall cloudy feel
+    surface = LightCloudGray, // LightCloudGray for a softer surface
+    onPrimary = CharcoalGray, // CharcoalGray text/icons on primary color
+    onSecondary = MediumGray, // MediumGray text/icons on secondary color
+    onTertiary = MediumGray, // MediumGray text/icons on tertiary color
+    onBackground = CharcoalGray, // CharcoalGray text/icons on background
+    onSurface = DarkShadowGray // DarkShadowGray text/icons on surface
+)
+
 @Composable
 fun NimbusTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    weather: WeatherStatus?,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-
         darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+        else -> when (weather) {
+            WeatherStatus.THUNDERSTORM -> ThunderstormColorScheme
+            WeatherStatus.DRIZZLE -> DrizzleColorScheme
+            WeatherStatus.RAIN -> RainyColorScheme
+            WeatherStatus.SNOW -> SnowyColorScheme
+            WeatherStatus.ATMOSPHERE -> AtmosphereColorScheme
+            WeatherStatus.CLEAR -> ClearDayColorScheme
+            WeatherStatus.CLOUDS -> CloudyColorScheme
+            else -> LightColorScheme
+        }
     }
 
     MaterialTheme(
-        colorScheme = DrizzleColorScheme,
+        colorScheme = colorScheme,
         typography = Typography,
         content = content
     )

@@ -6,6 +6,8 @@
 
 package com.weather.nimbus.data.weather.model
 
+import com.weather.nimbus.common.model.WeatherStatus
+
 data class WeatherData(
     val cityName: String,
     val date: Int,
@@ -14,7 +16,7 @@ data class WeatherData(
     val main: Main
 ) {
     data class Weather(
-        val weatherStatus: String,
+        val weatherStatus: WeatherStatus,
         val description: String
     )
 

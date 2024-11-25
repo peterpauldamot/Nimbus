@@ -6,6 +6,7 @@
 
 package com.weather.nimbus.data.weather.source.transformer
 
+import com.weather.nimbus.common.model.WeatherStatus
 import com.weather.nimbus.data.weather.model.WeatherData
 import com.weather.nimbus.data.weather.model.CurrentWeatherResponse
 
@@ -25,14 +26,13 @@ class CurrentWeatherResponseTransformer {
         weather: CurrentWeatherResponse.Weather
     ): WeatherData.Weather {
         val weatherStatus = when(weather.id) {
-            in 200..232 -> "thunderstorm"
-            in 300..321 -> "rain"
-            in 500..531 -> "rain"
-            in 600..622 -> "snow"
-            in 701..781 -> "atmosphere"
-            800 -> "clear"
-            in 801..804 -> "clouds"
-            else -> "clear"
+            in 200..232 -> WeatherStatus.THUNDERSTORM
+            in 300..321 -> WeatherStatus.DRIZZLE
+            in 500..531 -> WeatherStatus.RAIN
+            in 600..622 -> WeatherStatus.SNOW
+            in 701..781 -> WeatherStatus.THUNDERSTORM
+            in 801..804 -> WeatherStatus.CLOUDS
+            else -> WeatherStatus.CLEAR
         }
         val description = weather.description
         return WeatherData.Weather(

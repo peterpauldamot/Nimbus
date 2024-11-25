@@ -8,7 +8,6 @@ package com.weather.nimbus.data.weather.source.repository
 
 import android.util.Log
 import com.weather.nimbus.data.weather.model.WeatherData
-import com.weather.nimbus.data.weather.model.FiveDayForecastResponse
 import com.weather.nimbus.data.weather.model.ForecastData
 import com.weather.nimbus.data.weather.source.api.OpenWeatherAPI
 import com.weather.nimbus.data.weather.source.transformer.CurrentWeatherResponseTransformer

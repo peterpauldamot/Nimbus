@@ -6,7 +6,6 @@
 
 package com.weather.nimbus.presentation.view.dashboard
 
-import android.media.Image
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -32,19 +31,21 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.weather.nimbus.R
+import com.weather.nimbus.common.model.WeatherStatus
 import com.weather.nimbus.presentation.theme.NimbusTheme
 import kotlin.random.Random
 
 @Composable
-fun MakeWeatherStatusImage(weatherStatus: String?) {
+fun MakeWeatherStatusImage(weatherStatus: WeatherStatus?) {
     Box(modifier = Modifier.size(200.dp)) {
-        when (weatherStatus?.lowercase()) {
-            "clear" -> SunnyWeatherStatus()
-            "rain" -> RainyWeatherStatus()
-            "thunderstorm" -> WeatherStatusTemplateWithImage(R.drawable.weather_status_thunderstorm)
-            "snow" -> WeatherStatusTemplateWithImage(R.drawable.weather_status_snowy)
-            "atmosphere" -> WeatherStatusTemplateWithImage(R.drawable.weather_status_windy)
-            "clouds" -> WeatherStatusTemplateWithImage(R.drawable.weather_status_foggy)
+        when (weatherStatus) {
+            WeatherStatus.THUNDERSTORM -> WeatherStatusTemplateWithImage(R.drawable.weather_status_thunderstorm)
+            WeatherStatus.DRIZZLE -> RainyWeatherStatus()
+            WeatherStatus.RAIN -> RainyWeatherStatus()
+            WeatherStatus.SNOW -> WeatherStatusTemplateWithImage(R.drawable.weather_status_snowy)
+            WeatherStatus.ATMOSPHERE -> WeatherStatusTemplateWithImage(R.drawable.weather_status_windy)
+            WeatherStatus.CLEAR -> SunnyWeatherStatus()
+            WeatherStatus.CLOUDS -> WeatherStatusTemplateWithImage(R.drawable.weather_status_foggy)
             else -> SunnyWeatherStatus()
         }
     }
@@ -78,7 +79,7 @@ private fun RainyWeatherStatus() {
             .fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        val cloudOffset by rememberInfiniteTransition().animateFloat(
+        val cloudOffset by rememberInfiniteTransition(label = "Cloud Offset").animateFloat(
             initialValue = 0f,
             targetValue = 5f,
             animationSpec = infiniteRepeatable(
@@ -118,7 +119,7 @@ private fun WeatherStatusTemplateWithImage(image: Int) {
 
 @Composable
 private fun RaindropAnimation(delay: Int) {
-    val transition = rememberInfiniteTransition()
+    val transition = rememberInfiniteTransition(label = "Raindrop Animation")
     val dropXPosition by transition.animateFloat(
         initialValue = -5f,
         targetValue = 10f,
@@ -168,9 +169,9 @@ private fun RaindropAnimation(delay: Int) {
 @Preview
 @Composable
 fun WeatherPreview() {
-    NimbusTheme {
+    NimbusTheme (weather = null) {
         Box {
-            MakeWeatherStatusImage("foggy")
+            MakeWeatherStatusImage(WeatherStatus.CLEAR)
         }
     }
 }
