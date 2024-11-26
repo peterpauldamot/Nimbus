@@ -6,6 +6,7 @@
 
 package com.weather.nimbus.data.weather.model
 
+import com.weather.nimbus.common.model.WeatherStatus
 import com.weather.nimbus.data.weather.model.FiveDayForecastResponse.City
 
 data class ForecastData(
@@ -15,6 +16,7 @@ data class ForecastData(
     data class Forecast(
         val date: Int,
         val dayOfWeek: String,
+        val weatherStatus: WeatherStatus,
         val minTemperature: Double,
         val maxTemperature: Double
     )

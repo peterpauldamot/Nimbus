@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Created by Peter Paul Damot on 11-26-2024
+  ~ Copyright (c) 2024. All rights reserved.
+  ~ Last modified on 11-26-2024.
+  -->
+
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
-    <background android:drawable="@drawable/nimbus_icon_background"/>
+    <background android:drawable="@mipmap/nimbus_icon_background"/>
     <foreground android:drawable="@mipmap/nimbus_icon_foreground"/>
 </adaptive-icon>

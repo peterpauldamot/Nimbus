@@ -7,6 +7,7 @@
 package com.weather.nimbus.presentation.view.dashboard
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -63,11 +65,13 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.weather.nimbus.R
+import com.weather.nimbus.common.model.WeatherStatus
 import com.weather.nimbus.common.source.LoadingOverlay
 import com.weather.nimbus.data.cities.model.CitiesResponse
 import com.weather.nimbus.data.weather.model.WeatherData
@@ -133,7 +137,7 @@ fun MainDashboardComposables(weatherViewModel: WeatherViewModel) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp)
-                        .zIndex(1f) // Ensures this element appears above others
+                        .zIndex(1f)
                         .clickable { showSearchBar = false },
                     cityList = cityData
                 )
@@ -366,19 +370,15 @@ fun FiveDayDailyForecast(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 8.dp, end = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(
-            space = 8.dp,
-            alignment = Alignment.CenterHorizontally
-        ),
-        verticalAlignment = Alignment.CenterVertically,
+            .padding(start = 16.dp, end = 16.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
         forecast?.weatherForecast?.map { dailyForecast ->
             val minTemperature = convertToCelsius(dailyForecast.minTemperature)
             val maxTemperature = convertToCelsius(dailyForecast.maxTemperature)
             ForecastBox(
                 day = dailyForecast.dayOfWeek,
-                icon = "Sunny", //TODO: Add assets for icons
+                icon = dailyForecast.weatherStatus,
                 minMaxTemp = stringResource(
                     R.string.temperature_min_max,
                     minTemperature,
@@ -392,7 +392,7 @@ fun FiveDayDailyForecast(
 @Composable
 private fun ForecastBox(
     day: String,
-    icon: String,
+    icon: WeatherStatus,
     minMaxTemp: String
 ) {
     Box (modifier = Modifier
@@ -400,7 +400,9 @@ private fun ForecastBox(
             color = MaterialTheme.colorScheme.secondary,
             shape = RoundedCornerShape(18.dp)
         )
-        .padding(8.dp)
+        .size(width = 64.dp, height = 88.dp)
+        .padding(8.dp),
+        contentAlignment = Alignment.Center
     ) {
         Column (horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
@@ -408,10 +410,13 @@ private fun ForecastBox(
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSecondary
             )
-            Text(
-                text = icon,
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSecondary
+            Image(
+                modifier = Modifier
+                    .size(36.dp)
+                    .padding(vertical = 5.dp)
+                ,
+                painter = painterResource(id = makeWeatherStatusIcon(icon)),
+                contentDescription = "Weather Icon"
             )
             Text(
                 text = minMaxTemp,
@@ -419,7 +424,6 @@ private fun ForecastBox(
                 color = MaterialTheme.colorScheme.onSecondary
             )
         }
-
     }
 }
 
@@ -478,4 +482,17 @@ private fun getColorForCurrentTime(): Color {
         in 0..2 -> MidnightColor
         else -> PreDawnColor
     }
+}
+
+private fun makeWeatherStatusIcon(weatherStatus: WeatherStatus?): Int {
+        return when (weatherStatus) {
+            WeatherStatus.THUNDERSTORM -> R.drawable.icon_weather_thunderstorm
+            WeatherStatus.DRIZZLE -> R.drawable.icon_weather_rainy
+            WeatherStatus.RAIN -> R.drawable.icon_weather_rainy
+            WeatherStatus.SNOW -> R.drawable.icon_weather_snowy
+            WeatherStatus.ATMOSPHERE -> R.drawable.icon_weather_atmosphere
+            WeatherStatus.CLEAR -> R.drawable.icon_weather_sunny
+            WeatherStatus.CLOUDS -> R.drawable.icon_weather_cloudy
+            else -> R.drawable.icon_weather_sunny
+        }
 }
