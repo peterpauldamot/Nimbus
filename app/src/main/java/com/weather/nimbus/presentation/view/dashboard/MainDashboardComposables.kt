@@ -88,7 +88,6 @@ import kotlin.math.roundToInt
 
 @Composable
 fun MainDashboardComposables(weatherViewModel: WeatherViewModel) {
-    // Collect the weather data and error states as State objects
     val weatherData by weatherViewModel.weatherData.collectAsState()
     val forecastData by weatherViewModel.forecastData.collectAsState()
     val cityData by weatherViewModel.cityData.collectAsState()
@@ -96,16 +95,10 @@ fun MainDashboardComposables(weatherViewModel: WeatherViewModel) {
     val isLoading = weatherViewModel.isLoading.collectAsState().value
     var showSearchBar by rememberSaveable { mutableStateOf(false) }
 
-    //TODO: Make a function to combine API calls and fetch asynchronously
     val onCitySelected: (CitiesResponse) -> Unit = { city ->
-        weatherViewModel.getCurrentWeatherOnCity(
-            lat = city.coordinates?.latitude,
-            long = city.coordinates?.longitude
-        )
-
-        weatherViewModel.getFiveDayForecastOnCity(
-            lat = city.coordinates?.latitude,
-            long = city.coordinates?.longitude
+        weatherViewModel.getWeatherData(
+            latitude = city.coordinates.latitude,
+            longitude = city.coordinates.longitude
         )
     }
 

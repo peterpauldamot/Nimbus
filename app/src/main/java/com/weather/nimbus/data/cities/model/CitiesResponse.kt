@@ -15,7 +15,7 @@ data class CitiesResponse(
     @SerializedName("name") val name: String,
     @SerializedName("state") val state: String,
     @SerializedName("country") val country: String,
-    @SerializedName("coord") val coordinates: Coordinates?
+    @SerializedName("coord") val coordinates: Coordinates
 ) {
     @Serializable
     data class Coordinates(

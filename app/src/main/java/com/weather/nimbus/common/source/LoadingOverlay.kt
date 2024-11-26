@@ -6,10 +6,7 @@
 
 package com.weather.nimbus.common.source
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,10 +18,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.weather.nimbus.R
 
-@SuppressLint("UnrememberedMutableInteractionSource")
 @Composable
 fun LoadingOverlay(
     isLoading: Boolean,
@@ -34,7 +32,7 @@ fun LoadingOverlay(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(backgroundColor.copy(alpha = 0.8f)), // Greyish Transparent
+                .background(backgroundColor.copy(alpha = 0.8f)),
             contentAlignment = Alignment.Center
         ) {
             Box(
@@ -50,7 +48,7 @@ fun LoadingOverlay(
                         color = MaterialTheme.colorScheme.primary
                     )
                     Text(
-                        text = "Fetching weather data...",
+                        text = stringResource(R.string.fetching_weather_data),
                         style = MaterialTheme.typography.bodyLarge
                     )
                 }

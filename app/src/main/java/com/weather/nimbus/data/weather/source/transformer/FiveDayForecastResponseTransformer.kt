@@ -58,11 +58,11 @@ class FiveDayForecastResponseTransformer {
     }
 
     private fun getDailyLowestTemperature(forecasts: List<FiveDayForecastResponse.Forecast>): Double {
-        return forecasts.map { it.main.minTemperature }.min()
+        return forecasts.map { it.main.minTemperature }.minOrNull() ?: 0.0
     }
 
     private fun getDailyHighestTemperature(forecasts: List<FiveDayForecastResponse.Forecast>): Double {
-        return forecasts.map { it.main.maxTemperature }.max()
+        return forecasts.map { it.main.maxTemperature }.maxOrNull() ?: 0.0
     }
 
     private fun calculateDailyAverageMin(forecasts: List<FiveDayForecastResponse.Forecast>): Double {

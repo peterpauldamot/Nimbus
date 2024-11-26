@@ -60,8 +60,7 @@ class MainDashboard : ComponentActivity() {
 
     private fun initialDataLoad() {
         locationHelper.requestLocationPermission(this)
-        weatherViewModel.getCurrentWeather()
-        weatherViewModel.getForecastWeather()
+        weatherViewModel.getWeatherData()
         weatherViewModel.getCityData()
     }
 }
