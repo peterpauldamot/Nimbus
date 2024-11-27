@@ -91,7 +91,10 @@ import java.time.LocalTime
 import kotlin.math.roundToInt
 
 @Composable
-fun MainDashboardComposables(weatherViewModel: WeatherViewModel) {
+fun MainDashboardComposables(
+    weatherViewModel: WeatherViewModel,
+    onNavigateToSettings: () -> Unit
+) {
     val weatherData by weatherViewModel.weatherData.collectAsState()
     val forecastData by weatherViewModel.forecastData.collectAsState()
     val cityData by weatherViewModel.cityData.collectAsState()
@@ -122,7 +125,10 @@ fun MainDashboardComposables(weatherViewModel: WeatherViewModel) {
                     )
                     .verticalScroll(scrollState)
             ) {
-                MyTopBar(onSearchIconClick = { showSearchBar = true })
+                MyTopBar(
+                    onSearchIconClick = { showSearchBar = true },
+                    onNavigateToSettings = onNavigateToSettings
+                )
                 TemperatureHeader(
                     mainTemp = weatherData?.mainConditions,
                     weather = weatherData?.weather,
@@ -160,7 +166,8 @@ fun MainDashboardComposables(weatherViewModel: WeatherViewModel) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyTopBar(
-    onSearchIconClick: () -> Unit
+    onSearchIconClick: () -> Unit,
+    onNavigateToSettings: () -> Unit
 ) {
     TopAppBar(
         title = {},
@@ -174,7 +181,7 @@ fun MyTopBar(
             }
         },
         actions = {
-            IconButton(onClick = { /* Handle navigation icon click */ }) {
+            IconButton(onClick = onNavigateToSettings) {
                 Icon(
                     imageVector = Icons.Filled.MoreVert,
                     contentDescription = "Settings",

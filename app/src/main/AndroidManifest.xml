@@ -24,7 +24,7 @@
         android:theme="@style/Theme.Nimbus"
         tools:targetApi="31">
         <activity
-            android:name=".presentation.view.MainDashboard"
+            android:name=".presentation.view.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.Nimbus">
             <intent-filter>
