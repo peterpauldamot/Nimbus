@@ -110,56 +110,54 @@ fun MainDashboardComposables(
         )
     }
 
-    NimbusTheme(weather = weatherData?.weather?.weatherStatus) {
-        Surface(
+    Surface(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(bottom = 16.dp)
+    ) {
+        Column(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(bottom = 16.dp)
-        ) {
-            Column(
-                modifier = Modifier
-                    .background(
-                        getGradientForCurrentTheme(
-                            MaterialTheme.colorScheme.background
-                        )
+                .background(
+                    getGradientForCurrentTheme(
+                        MaterialTheme.colorScheme.background
                     )
-                    .verticalScroll(scrollState)
-            ) {
-                MyTopBar(
-                    onSearchIconClick = { showSearchBar = true },
-                    onNavigateToSettings = onNavigateToSettings
                 )
-                TemperatureHeader(
-                    mainTemp = weatherData?.mainConditions,
-                    weather = weatherData?.weather,
-                    cityName = weatherData?.cityName ?: "Current Location"
-                )
-                Spacer(modifier = Modifier.height(160.dp))
+                .verticalScroll(scrollState)
+        ) {
+            MyTopBar(
+                onSearchIconClick = { showSearchBar = true },
+                onNavigateToSettings = onNavigateToSettings
+            )
+            TemperatureHeader(
+                mainTemp = weatherData?.mainConditions,
+                weather = weatherData?.weather,
+                cityName = weatherData?.cityName ?: "Current Location"
+            )
+            Spacer(modifier = Modifier.height(160.dp))
 
-                FiveDayDailyForecast(forecastData)
-                Spacer(modifier = Modifier.height(20.dp))
-                FiveDayForecastButton()
+            FiveDayDailyForecast(forecastData)
+            Spacer(modifier = Modifier.height(20.dp))
+            FiveDayForecastButton()
 
-                Spacer(modifier = Modifier.height(60.dp))
-                CurrentConditions(weatherData = weatherData)
-                Spacer(modifier = Modifier.height(20.dp))
-            }
-
-            if (showSearchBar) {
-                LocationSearchBar(
-                    onClose = { showSearchBar = false },
-                    onCitySelected = onCitySelected,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp)
-                        .zIndex(1f)
-                        .clickable { showSearchBar = false },
-                    cityList = cityData
-                )
-            }
-
-            LoadingOverlay(isLoading, MaterialTheme.colorScheme.background)
+            Spacer(modifier = Modifier.height(60.dp))
+            CurrentConditions(weatherData = weatherData)
+            Spacer(modifier = Modifier.height(20.dp))
         }
+
+        if (showSearchBar) {
+            LocationSearchBar(
+                onClose = { showSearchBar = false },
+                onCitySelected = onCitySelected,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp)
+                    .zIndex(1f)
+                    .clickable { showSearchBar = false },
+                cityList = cityData
+            )
+        }
+
+        LoadingOverlay(isLoading, MaterialTheme.colorScheme.background)
     }
 }
 

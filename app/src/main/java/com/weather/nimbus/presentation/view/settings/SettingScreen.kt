@@ -29,6 +29,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,19 +37,22 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.weather.nimbus.common.model.AppThemes
+import com.weather.nimbus.common.model.TemperatureUnits
 import com.weather.nimbus.common.model.WeatherStatus
+import com.weather.nimbus.presentation.PreferencesManager
 import com.weather.nimbus.presentation.theme.NimbusTheme
-
-@Composable
-fun SettingsScreen(navController: NavController) {
-    NimbusTheme(weather = WeatherStatus.CLEAR) {
-        Settings(navController)
-    }
-}
+import com.weather.nimbus.presentation.viewmodel.SettingsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Settings(navController: NavController) {
+fun SettingsScreen(
+    navController: NavController,
+    settingsViewModel: SettingsViewModel
+) {
+    val selectedTheme by settingsViewModel.selectedTheme.collectAsState()
+    //val selectedUnit by settingsViewModel.selectedUnit.collectAsState()
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -81,9 +85,10 @@ fun Settings(navController: NavController) {
             ) {
                 SettingItem(
                     title = "Theme",
-                    options = listOf("Dynamic", "Dark", "Clear", "Drizzle", "Rain", "Thunderstorm", "Atmosphere", "Clouds"),
+                    options = AppThemes.entries,
+                    selectedOption = selectedTheme,
                     onOptionSelected = { selectedTheme ->
-                        // TODO: Handle theme selection
+                        settingsViewModel.updateTheme(selectedTheme as AppThemes)
                     }
                 )
 
@@ -96,7 +101,8 @@ fun Settings(navController: NavController) {
 
                 SettingItem(
                     title = "Units",
-                    options = listOf("Kelvin", "Celsius", "Fahrenheit"),
+                    options = TemperatureUnits.entries,
+                    selectedOption = TemperatureUnits.KELVIN,
                     onOptionSelected = { selectedUnit ->
                         // TODO:
                     }
@@ -115,11 +121,11 @@ fun Settings(navController: NavController) {
 @Composable
 fun SettingItem(
     title: String,
-    options: List<String>,
-    onOptionSelected: (String) -> Unit
+    options: List<Enum<*>>,
+    selectedOption: Enum<*>?,
+    onOptionSelected: (Enum<*>) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
-    var selectedOption by remember { mutableStateOf(options.first()) }
 
     Column {
         Text(
@@ -136,7 +142,7 @@ fun SettingItem(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = selectedOption,
+                text = selectedOption?.name ?: "None Selected",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onBackground
             )
@@ -154,13 +160,12 @@ fun SettingItem(
             options.forEach { option ->
                 DropdownMenuItem(
                     onClick = {
-                        selectedOption = option
                         expanded = false
                         onOptionSelected(option)
                     },
                     text = {
                         Text(
-                            text = option,
+                            text = option.name,
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onBackground
                         )

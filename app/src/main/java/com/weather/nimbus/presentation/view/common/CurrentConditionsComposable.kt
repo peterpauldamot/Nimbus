@@ -44,6 +44,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.weather.nimbus.R
+import com.weather.nimbus.common.model.AppThemes
 import com.weather.nimbus.common.model.WeatherStatus
 import com.weather.nimbus.data.weather.model.WeatherData
 import com.weather.nimbus.presentation.theme.DuskyAmethyst
@@ -561,7 +562,10 @@ private fun CurrentConditionsPreview() {
         ),
         clouds = 100
     )
-    NimbusTheme(weather = WeatherStatus.CLOUDS) {
+    NimbusTheme(
+        weather = WeatherStatus.CLOUDS,
+        selectedTheme = AppThemes.RAINY
+    ) {
         Box(
             modifier = Modifier
                 .fillMaxSize()

@@ -31,6 +31,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.weather.nimbus.R
+import com.weather.nimbus.common.model.AppThemes
 import com.weather.nimbus.common.model.WeatherStatus
 import com.weather.nimbus.presentation.theme.NimbusTheme
 import kotlin.random.Random
@@ -169,7 +170,10 @@ private fun RaindropAnimation(delay: Int) {
 @Preview
 @Composable
 fun WeatherPreview() {
-    NimbusTheme (weather = null) {
+    NimbusTheme (
+        weather = null,
+        selectedTheme = AppThemes.CLEAR
+    ) {
         Box {
             MakeWeatherStatusImage(WeatherStatus.CLEAR)
         }

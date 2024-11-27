@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import com.weather.nimbus.common.model.AppThemes
 import com.weather.nimbus.common.model.WeatherStatus
 import com.weather.nimbus.data.weather.model.CurrentWeatherResponse
 import com.weather.nimbus.data.weather.model.WeatherData
@@ -158,21 +159,32 @@ private val CloudyColorScheme = lightColorScheme(
 
 @Composable
 fun NimbusTheme(
+    selectedTheme: AppThemes,
     darkTheme: Boolean = isSystemInDarkTheme(),
     weather: WeatherStatus?,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        darkTheme -> DarkColorScheme
-        else -> when (weather) {
-            WeatherStatus.THUNDERSTORM -> ThunderstormColorScheme
-            WeatherStatus.DRIZZLE -> DrizzleColorScheme
-            WeatherStatus.RAIN -> RainyColorScheme
-            WeatherStatus.SNOW -> SnowyColorScheme
-            WeatherStatus.ATMOSPHERE -> AtmosphereColorScheme
-            WeatherStatus.CLEAR -> ClearDayColorScheme
-            WeatherStatus.CLOUDS -> CloudyColorScheme
-            else -> LightColorScheme
+    val colorScheme = when (selectedTheme) {
+        AppThemes.DARK -> DarkColorScheme
+        AppThemes.THUNDERSTORM -> ThunderstormColorScheme
+        AppThemes.DRIZZLE -> DrizzleColorScheme
+        AppThemes.RAINY -> RainyColorScheme
+        AppThemes.SNOWY -> SnowyColorScheme
+        AppThemes.ATMOSPHERE -> AtmosphereColorScheme
+        AppThemes.CLEAR -> ClearDayColorScheme
+        AppThemes.CLOUDS -> CloudyColorScheme
+        AppThemes.DYNAMIC -> when {
+            darkTheme -> DarkColorScheme
+            else -> when (weather) {
+                WeatherStatus.THUNDERSTORM -> ThunderstormColorScheme
+                WeatherStatus.DRIZZLE -> DrizzleColorScheme
+                WeatherStatus.RAIN -> RainyColorScheme
+                WeatherStatus.SNOW -> SnowyColorScheme
+                WeatherStatus.ATMOSPHERE -> AtmosphereColorScheme
+                WeatherStatus.CLEAR -> ClearDayColorScheme
+                WeatherStatus.CLOUDS -> CloudyColorScheme
+                else -> LightColorScheme
+            }
         }
     }
 
