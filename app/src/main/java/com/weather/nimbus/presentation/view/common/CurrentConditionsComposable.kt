@@ -49,9 +49,49 @@ import com.weather.nimbus.data.weather.model.WeatherData
 import com.weather.nimbus.presentation.theme.DuskyAmethyst
 import com.weather.nimbus.presentation.theme.NimbusTheme
 import com.weather.nimbus.presentation.theme.RainDropBlue
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlin.random.Random
 
 //TODO: Create a composable with summary of pressure, cloudiness, precipitation
+
+// COMMON
+private const val RANDOM_OFFSET_RANGE = 10f
+private const val RANDOM_OFFSET_HALF_RANGE = 5f
+
+// TEMPERATURE
+private const val MIN_TEMPERATURE = -50f
+private const val MAX_TEMPERATURE = 50f
+private const val TEMPERATURE_IMAGE_SCALE_WIDTH = 200
+private const val TEMPERATURE_POINTER_SIZE = 60
+private const val TEMPERATURE_POINTER_OFFSET_Y = 25f
+private const val TEMPERATURE_POINTER_MAX_ROTATION_ANGLE = 90f
+private const val TEMPERATURE_OFFSET_RANGE_MIN = -10f
+private const val TEMPERATURE_OFFSET_RANGE_MAX = 10f
+private const val TEMPERATURE_ANIMATION_DURATION = 1000
+
+// HUMIDITY
+private const val MIN_HUMIDITY = 0
+private const val MAX_HUMIDITY = 100
+private const val HUMIDITY_ANIMATION_DURATION = 1000
+private const val HUMIDITY_OFFSET_RANGE = 0.1f
+private const val HUMIDITY_OFFSET_HALF_RANGE = 0.05f
+
+// WIND
+private const val WIND_DIRECTION_IMAGE_SIZE = 50
+private const val WIND_ANIMATION_DURATION = 200
+
+// PRESSURE
+private const val MIN_PRESSURE = 890
+private const val MAX_PRESSURE = 1100
+private const val PRESSURE_IMAGE_SCALE_SIZE = 80
+private const val PRESSURE_POINTER_SIZE = 40
+private const val PRESSURE_POINTER_OFFSET_Y = 14
+private const val PRESSURE_POINTER_MIN_ROTATION_ANGLE = 150f
+private const val PRESSURE_POINTER_MAX_ROTATION_ANGLE = 135f
+private const val PRESSURE_ANIMATION_DURATION = 100
+
+
 
 @Composable
 fun CurrentConditions(weatherData: WeatherData?) {
@@ -101,7 +141,7 @@ fun CurrentConditions(weatherData: WeatherData?) {
 }
 
 @Composable
-fun TemperatureBox(
+private fun TemperatureBox(
     modifier: Modifier,
     mainConditions: WeatherData.Main?
 ) {
@@ -111,23 +151,24 @@ fun TemperatureBox(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             if (mainConditions != null) {
-                val clampedTemperature = mainConditions.temperature.toFloat().coerceIn(-50f, 50f)
-                val baseRotationAngle = clampedTemperature * (90f / 50f)
+                val clampedTemperature = mainConditions.temperature.toFloat().coerceIn(
+                    MIN_TEMPERATURE, MAX_TEMPERATURE)
+                val baseRotationAngle = clampedTemperature * (TEMPERATURE_POINTER_MAX_ROTATION_ANGLE / MAX_TEMPERATURE)
                 val animatedRotation = remember { Animatable(baseRotationAngle) }
 
                 LaunchedEffect(baseRotationAngle) {
-                    while (true) {
-                        val randomOffset = Random.nextFloat() * 20f - 10f
+                    val animationSpec = tween<Float>(
+                        durationMillis = TEMPERATURE_ANIMATION_DURATION,
+                        easing = LinearOutSlowInEasing
+                    )
+                    while (isActive) {
+                        val randomOffset = (
+                                Random.nextFloat() * TEMPERATURE_OFFSET_RANGE_MAX
+                                ) - TEMPERATURE_OFFSET_RANGE_MIN
                         val targetAngle = baseRotationAngle + randomOffset
-
-                        animatedRotation.animateTo(
-                            targetValue = targetAngle,
-                            animationSpec = tween(
-                                durationMillis = 2000,
-                                easing = LinearOutSlowInEasing
-                            )
-                        )
+                        animatedRotation.animateTo(targetValue = targetAngle, animationSpec = animationSpec)
                     }
+                    delay(1000L)
                 }
 
                 Column(
@@ -137,14 +178,14 @@ fun TemperatureBox(
                         contentAlignment = Alignment.Center
                     ) {
                         Image(
-                            modifier = Modifier.width(200.dp),
+                            modifier = Modifier.width(TEMPERATURE_IMAGE_SCALE_WIDTH.dp),
                             painter = painterResource(id = R.drawable.current_conditions_temperature_scale),
                             contentDescription = "Weather Scale"
                         )
                         Image(
                             modifier = Modifier
-                                .size(60.dp)
-                                .offset(y = 25.dp)
+                                .size(TEMPERATURE_POINTER_SIZE.dp)
+                                .offset(y = TEMPERATURE_POINTER_OFFSET_Y.dp)
                                 .rotate(animatedRotation.value),
                             painter = painterResource(id = R.drawable.current_conditions_temperature_pointer),
                             contentDescription = "Weather Pointer"
@@ -174,28 +215,36 @@ fun TemperatureBox(
                     }
                 }
             } else {
-                Text(
-                    text = stringResource(R.string.label_common_no_data_on_location),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onTertiary
-                )
+                MakeNoDataText()
             }
         }
     }
 }
 
 @Composable
-fun HumidityBox(
+private fun HumidityBox(
     modifier: Modifier,
     mainConditions: WeatherData.Main?
 ) {
     CurrentConditionsBox(modifier, stringResource(R.string.label_current_conditions_humidity)) {
         if (mainConditions != null) {
-            val minHumidity = 0
-            val maxHumidity = 100
+            val clampedHumidity = mainConditions.humidity.coerceIn(MIN_HUMIDITY, MAX_HUMIDITY)
+            val baseFillHeight = (clampedHumidity / MAX_HUMIDITY.toFloat())
+            val animatedHeight = remember { Animatable(baseFillHeight) }
 
-            val clampedHumidity = mainConditions.humidity.coerceIn(minHumidity, maxHumidity)
-            val fillHeight = (clampedHumidity / 100f)
+            LaunchedEffect(baseFillHeight) {
+                val animationSpec = tween<Float>(
+                    durationMillis = HUMIDITY_ANIMATION_DURATION,
+                    easing = LinearEasing
+                )
+
+                while (isActive) {
+                    val randomOffset = Random.nextFloat() * HUMIDITY_OFFSET_RANGE - HUMIDITY_OFFSET_HALF_RANGE
+                    val targetHeight = baseFillHeight + randomOffset
+                    animatedHeight.animateTo(targetHeight, animationSpec)
+                }
+            }
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth(),
@@ -224,7 +273,7 @@ fun HumidityBox(
                     Box(
                         modifier = Modifier
                             .width(80.dp)
-                            .offset(x = (-8).dp, y = (0).dp)
+                            .offset(x = (-8).dp)
                             .height(70.dp)
                             .clip(shape = makeDropletShape())
                             .background(
@@ -234,7 +283,7 @@ fun HumidityBox(
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .fillMaxHeight(fillHeight)
+                                .fillMaxHeight(animatedHeight.value)
                                 .background(
                                     color = RainDropBlue
                                 )
@@ -250,34 +299,37 @@ fun HumidityBox(
 
                 Box( // Label Arrow Box
                     modifier = Modifier
-                        .height(70.dp)
+                        .height(80.dp)
                         .width(10.dp),
                     contentAlignment = Alignment.BottomCenter
                 ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.icon_common_arrow_left),
-                        contentDescription = "Pressure bar arrow pointer",
-                        modifier = Modifier
-                            .size(10.dp)
-                            .offset(
-                                x = (-2).dp,
-                                y = -(fillHeight * 70).dp + 10.dp / 2),
-                        tint = DuskyAmethyst
-                    )
+                    Column() {
+                        Icon(
+                            painter = painterResource(id = R.drawable.icon_common_arrow_left),
+                            contentDescription = "Pressure bar arrow pointer",
+                            modifier = Modifier
+                                .size(10.dp)
+                                .offset(
+                                    x = (-2).dp
+                                ),
+                            tint = DuskyAmethyst
+                        )
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .fillMaxHeight(animatedHeight.value)
+                        )
+                    }
                 }
             }
         } else {
-            Text(
-                text = stringResource(R.string.label_common_no_data_on_location),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onTertiary
-            )
+            MakeNoDataText()
         }
     }
 }
 
 @Composable
-fun WindBox(
+private fun WindBox(
     modifier: Modifier,
     windData: WeatherData.Wind?
 ) {
@@ -285,18 +337,16 @@ fun WindBox(
         if (windData != null) {
             val baseRotationAngle = windData.degrees.toFloat()
             val animatedRotationAngle = remember { Animatable(initialValue = baseRotationAngle) }
-            LaunchedEffect(baseRotationAngle) {
-                while (true) {
-                    val randomOffset = Random.nextFloat() * 10f - 5f
-                    val targetAngle = baseRotationAngle + randomOffset
 
-                    animatedRotationAngle.animateTo(
-                        targetValue = targetAngle,
-                        animationSpec = tween(
-                            durationMillis = 200,
-                            easing = LinearEasing
-                        )
-                    )
+            LaunchedEffect(baseRotationAngle) {
+                val animationSpec = tween<Float>(
+                    durationMillis = WIND_ANIMATION_DURATION,
+                    easing = LinearEasing
+                )
+                while (isActive) {
+                    val randomOffset = Random.nextFloat() * RANDOM_OFFSET_RANGE - RANDOM_OFFSET_HALF_RANGE
+                    val targetAngle = baseRotationAngle + randomOffset
+                    animatedRotationAngle.animateTo(targetValue = targetAngle, animationSpec = animationSpec)
                 }
             }
 
@@ -333,7 +383,7 @@ fun WindBox(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "N",
+                        text = stringResource(R.string.labels_current_conditions_direction_north),
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onTertiary
                     )
@@ -342,51 +392,41 @@ fun WindBox(
                         painter = painterResource(id = R.drawable.icon_current_conditions_direction),
                         contentDescription = "Wind Direction",
                         modifier = Modifier
-                            .size(50.dp)
+                            .size(WIND_DIRECTION_IMAGE_SIZE.dp)
                             .rotate(animatedRotationAngle.value),
                         tint = MaterialTheme.colorScheme.onTertiary
                     )
                 }
             }
         } else {
-            Text(
-                text = stringResource(R.string.label_common_no_data_on_location),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onTertiary
-            )
+            MakeNoDataText()
         }
     }
 }
 
 @Composable
-fun PressureBox(
+private fun PressureBox(
     modifier: Modifier,
     mainConditions: WeatherData.Main?
 ) {
     CurrentConditionsBox(modifier, stringResource(R.string.label_current_conditions_pressure)) {
         if (mainConditions != null) {
-            val pressure = 1200
-            val pointerMinAngle = 150f
-            val pointerMaxAngle = 135f
-
-            val minPressure = 890
-            val maxPressure = 1100
-            val clampedPressure = pressure.coerceIn(minPressure, maxPressure)
-            val baseRotationAngle = pointerMinAngle - ((clampedPressure - minPressure) / (maxPressure - minPressure)) * (pointerMinAngle + pointerMaxAngle)
+            val clampedPressure = mainConditions.pressure.coerceIn(MIN_PRESSURE, MAX_PRESSURE)
+            val baseRotationAngle = PRESSURE_POINTER_MIN_ROTATION_ANGLE - (
+                    (clampedPressure - MIN_PRESSURE) / (MAX_PRESSURE - MIN_PRESSURE)
+                    ) * (PRESSURE_POINTER_MIN_ROTATION_ANGLE + PRESSURE_POINTER_MAX_ROTATION_ANGLE)
 
             val animatedRotation = remember { Animatable(baseRotationAngle) }
 
             LaunchedEffect(baseRotationAngle) {
-                while (true) {
-                    val randomOffset = Random.nextFloat() * 10f - 5f
+                val animationSpec = tween<Float>(
+                    durationMillis = PRESSURE_ANIMATION_DURATION,
+                    easing = LinearOutSlowInEasing
+                )
+                while (isActive) {
+                    val randomOffset = Random.nextFloat() * RANDOM_OFFSET_RANGE - RANDOM_OFFSET_HALF_RANGE
                     val targetAngle = baseRotationAngle + randomOffset
-                    animatedRotation.animateTo(
-                        targetValue = targetAngle,
-                        animationSpec = tween(
-                            durationMillis = 100,
-                            easing = LinearOutSlowInEasing
-                        )
-                    )
+                    animatedRotation.animateTo(targetValue = targetAngle, animationSpec = animationSpec)
                 }
             }
 
@@ -405,14 +445,14 @@ fun PressureBox(
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
-                        modifier = Modifier.size(80.dp),
+                        modifier = Modifier.size(PRESSURE_IMAGE_SCALE_SIZE.dp),
                         painter = painterResource(id = R.drawable.current_conditions_pressure_scale),
                         contentDescription = "Pressure Scale"
                     )
                     Image(
                         modifier = Modifier
-                            .size(40.dp)
-                            .offset(y = 14.dp)
+                            .size(PRESSURE_POINTER_SIZE.dp)
+                            .offset(y = PRESSURE_POINTER_OFFSET_Y.dp)
                             .rotate(animatedRotation.value),
                         painter = painterResource(id = R.drawable.current_conditions_pressure_pointer),
                         contentDescription = "Pressure Pointer"
@@ -420,17 +460,13 @@ fun PressureBox(
                 }
             }
         } else {
-            Text(
-                text = stringResource(R.string.label_common_no_data_on_location),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onTertiary
-            )
+            MakeNoDataText()
         }
     }
 }
 
 @Composable
-fun CurrentConditionsBox(
+private fun CurrentConditionsBox(
     modifier: Modifier,
     title: String,
     content: @Composable () -> Unit
@@ -462,6 +498,15 @@ fun CurrentConditionsBox(
             }
         }
     }
+}
+
+@Composable
+private fun MakeNoDataText() {
+    Text(
+        text = stringResource(R.string.label_common_no_data_on_location),
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onTertiary
+    )
 }
 
 private fun makeDropletShape(): GenericShape {
@@ -506,7 +551,7 @@ private fun CurrentConditionsPreview() {
             minTemperature = 27,
             maxTemperature = 31,
             pressure = 1020,
-            humidity = 87
+            humidity = 50
         ),
         wind = WeatherData.Wind(
             speed = 2.06,

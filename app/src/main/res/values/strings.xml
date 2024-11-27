@@ -22,4 +22,5 @@
     <string name="label_value_with_units_meters_per_second">%1$s m/s</string>
     <string name="label_common_no_data_on_location">No data on location.</string>
     <string name="label_value_degrees">L: %1$s°</string>
+    <string name="labels_current_conditions_direction_north">N</string>
 </resources>
