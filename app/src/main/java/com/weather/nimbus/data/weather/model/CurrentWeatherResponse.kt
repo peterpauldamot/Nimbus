@@ -44,8 +44,8 @@ data class CurrentWeatherResponse(
 
     @Serializable
     data class Wind(
-        @SerialName("speed") val speed: Double? = null,
-        @SerialName("deg") val degrees: Int? = null,
+        @SerialName("speed") val speed: Double,
+        @SerialName("deg") val degrees: Int,
         @SerialName("gust") val gust: Double? = null
     )
 

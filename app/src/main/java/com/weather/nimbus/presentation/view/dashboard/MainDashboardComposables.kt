@@ -75,7 +75,6 @@ import com.weather.nimbus.common.model.WeatherStatus
 import com.weather.nimbus.common.source.LoadingOverlay
 import com.weather.nimbus.data.cities.model.CitiesResponse
 import com.weather.nimbus.data.weather.model.WeatherData
-import com.weather.nimbus.data.weather.model.CurrentWeatherResponse
 import com.weather.nimbus.data.weather.model.ForecastData
 import com.weather.nimbus.presentation.theme.AfternoonColor
 import com.weather.nimbus.presentation.theme.EveningColor
@@ -86,6 +85,7 @@ import com.weather.nimbus.presentation.theme.MorningColor
 import com.weather.nimbus.presentation.theme.NightColor
 import com.weather.nimbus.presentation.theme.NimbusTheme
 import com.weather.nimbus.presentation.theme.PreDawnColor
+import com.weather.nimbus.presentation.view.common.CurrentConditions
 import com.weather.nimbus.presentation.viewmodel.WeatherViewModel
 import java.time.LocalTime
 import kotlin.math.roundToInt
@@ -98,6 +98,7 @@ fun MainDashboardComposables(weatherViewModel: WeatherViewModel) {
     val errorState by weatherViewModel.errorState.collectAsState()
     val isLoading = weatherViewModel.isLoading.collectAsState().value
     var showSearchBar by rememberSaveable { mutableStateOf(false) }
+    val scrollState = rememberScrollState()
 
     val onCitySelected: (CitiesResponse) -> Unit = { city ->
         weatherViewModel.getWeatherData(
@@ -108,26 +109,34 @@ fun MainDashboardComposables(weatherViewModel: WeatherViewModel) {
 
     NimbusTheme(weather = weatherData?.weather?.weatherStatus) {
         Surface(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = 16.dp)
         ) {
             Column(
-                modifier = Modifier.background(
-                    getGradientForCurrentTheme(
-                        MaterialTheme.colorScheme.background))
+                modifier = Modifier
+                    .background(
+                        getGradientForCurrentTheme(
+                            MaterialTheme.colorScheme.background
+                        )
+                    )
+                    .verticalScroll(scrollState)
             ) {
-                    MyTopBar(
-                        onSearchIconClick = { showSearchBar = true }
-                    )
-                    TemperatureHeader(
-                        mainTemp = weatherData?.main,
-                        weather = weatherData?.weather,
-                        cityName = weatherData?.cityName ?: "Current Location"
-                    )
-                    Spacer(modifier = Modifier.height(160.dp))
-                    FiveDayDailyForecast(forecastData)
-                    Spacer(modifier = Modifier.height(64.dp))
+                MyTopBar(onSearchIconClick = { showSearchBar = true })
+                TemperatureHeader(
+                    mainTemp = weatherData?.mainConditions,
+                    weather = weatherData?.weather,
+                    cityName = weatherData?.cityName ?: "Current Location"
+                )
+                Spacer(modifier = Modifier.height(160.dp))
 
-                    FiveDayForecastButton()
+                FiveDayDailyForecast(forecastData)
+                Spacer(modifier = Modifier.height(20.dp))
+                FiveDayForecastButton()
+
+                Spacer(modifier = Modifier.height(60.dp))
+                CurrentConditions(weatherData = weatherData)
+                Spacer(modifier = Modifier.height(20.dp))
             }
 
             if (showSearchBar) {
@@ -293,7 +302,7 @@ fun TemperatureHeader(
     weather: WeatherData.Weather?,
     cityName: String
 ) {
-    val temperature = convertToCelsius(mainTemp?.temperature)
+    val temperature = formatTemperatureString(mainTemp?.temperature)
     val feelsLike = convertToCelsius(mainTemp?.feelsLike)
     val description = capitalizeFirstLetter(weather?.description)
 
@@ -344,47 +353,35 @@ fun TemperatureHeader(
 }
 
 @Composable
-fun OtherDetails(main: CurrentWeatherResponse.Main?,
-                 wind: CurrentWeatherResponse.Wind?
-) {
-    val humidity = main?.humidity
-    val windSpeed = wind?.speed
-
-    Column {
-        Text(
-            text = "Chance of Rain: TODO"
-        )
-        Text(
-            text = "Humidity: $humidity%"
-        )
-        Text(
-            text = "Wind Speed: $windSpeed km/h"
-        )
-    }
-}
-
-@Composable
 fun FiveDayDailyForecast(
     forecast: ForecastData?
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 16.dp, end = 16.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        forecast?.weatherForecast?.map { dailyForecast ->
-            val minTemperature = convertToCelsius(dailyForecast.minTemperature)
-            val maxTemperature = convertToCelsius(dailyForecast.maxTemperature)
-            ForecastBox(
-                day = dailyForecast.dayOfWeek,
-                icon = dailyForecast.weatherStatus,
-                minMaxTemp = stringResource(
-                    R.string.temperature_min_max,
-                    minTemperature,
-                    maxTemperature
+    Column {
+        Text(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+            text = stringResource(R.string.five_day_forecast),
+            style = MaterialTheme.typography.displaySmall,
+            color = MaterialTheme.colorScheme.onSecondary
+        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, end = 16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            forecast?.weatherForecast?.map { dailyForecast ->
+                val minTemperature = convertToCelsius(dailyForecast.minTemperature)
+                val maxTemperature = convertToCelsius(dailyForecast.maxTemperature)
+                ForecastBox(
+                    day = dailyForecast.dayOfWeek,
+                    icon = dailyForecast.weatherStatus,
+                    minMaxTemp = stringResource(
+                        R.string.temperature_min_max,
+                        minTemperature,
+                        maxTemperature
+                    )
                 )
-            )
+            }
         }
     }
 }
@@ -397,8 +394,7 @@ private fun ForecastBox(
 ) {
     Box (modifier = Modifier
         .background(
-            color = MaterialTheme.colorScheme.secondary,
-            shape = RoundedCornerShape(18.dp)
+            color = MaterialTheme.colorScheme.secondary, shape = RoundedCornerShape(18.dp)
         )
         .size(width = 64.dp, height = 88.dp)
         .padding(8.dp),
@@ -445,8 +441,11 @@ fun FiveDayForecastButton() {
     }
 }
 
+private fun formatTemperatureString(kelvin: Int?): String {
+    return String.format("%02d", kelvin) ?: ""
+}
+
 private fun convertToCelsius(kelvin: Double?): String {
-    // Convert to Celsius and round it to an integer
     val celsius = kelvin?.minus(273.15)?.roundToInt() ?: 0
     return String.format("%02d", celsius)
 }

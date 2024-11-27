@@ -13,7 +13,9 @@ data class WeatherData(
     val date: Int,
     val timezone: Int,
     val weather: Weather,
-    val main: Main
+    val mainConditions: Main,
+    val wind: Wind,
+    val clouds: Int
 ) {
     data class Weather(
         val weatherStatus: WeatherStatus,
@@ -21,13 +23,22 @@ data class WeatherData(
     )
 
     data class Main(
-        val temperature: Double,
+        val temperature: Int,
         val feelsLike: Double,
-        val minTemperature: Double,
-        val maxTemperature: Double,
+        val minTemperature: Int,
+        val maxTemperature: Int,
         val pressure: Int,
-        val humidity: Int,
-        val seaLevel: Int,
-        val groundLevel: Int
+        val humidity: Int
+    )
+
+    data class Wind(
+        val speed: Double,
+        val speedClassification: String,
+        val direction: String,
+        val degrees: Int
+    )
+
+    data class Clouds(
+        val cloudiness: Double
     )
 }

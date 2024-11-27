@@ -10,4 +10,16 @@
     <string name="temperature_degrees_celsius">\ %1$s°</string>
     <string name="temperature_min_max">%1$s°/%2$s°</string>
     <string name="fetching_weather_data">Fetching weather data...</string>
+    <string name="five_day_forecast">5 Day Forecast</string>
+    <string name="label_amount_zero">0</string>
+    <string name="label_amount_hundred">100</string>
+    <string name="label_current_conditions_title">Current Conditions</string>
+    <string name="label_current_conditions_temperature">Temperature</string>
+    <string name="label_current_conditions_humidity">Humidity</string>
+    <string name="label_current_conditions_wind">Wind</string>
+    <string name="label_current_conditions_pressure">Pressure</string>
+    <string name="label_current_conditions_wind_speed_direction">%1$s ● To %2$s.</string>
+    <string name="label_value_with_units_meters_per_second">%1$s m/s</string>
+    <string name="label_common_no_data_on_location">No data on location.</string>
+    <string name="label_value_degrees">L: %1$s°</string>
 </resources>

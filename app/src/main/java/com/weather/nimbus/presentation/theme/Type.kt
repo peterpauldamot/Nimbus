@@ -62,22 +62,22 @@ val Typography = Typography(
 
     // Title Text Styles (For section headers or page titles)
     titleLarge = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Medium,
+        fontFamily = FontFamily.SansSerif,
+        fontWeight = FontWeight.Bold,
         fontSize = 22.sp,  // Prominent subheadings
         lineHeight = 28.sp,
         letterSpacing = 0.sp
     ),
     titleMedium = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Medium,
+        fontFamily = FontFamily.SansSerif,
+        fontWeight = FontWeight.Bold,
         fontSize = 18.sp,  // Section titles, lighter than TitleLarge
         lineHeight = 24.sp,
         letterSpacing = 0.25.sp
     ),
     titleSmall = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Medium,
+        fontFamily = FontFamily.SansSerif,
+        fontWeight = FontWeight.Bold,
         fontSize = 14.sp,  // Small titles or labels
         lineHeight = 20.sp,
         letterSpacing = 0.1.sp
