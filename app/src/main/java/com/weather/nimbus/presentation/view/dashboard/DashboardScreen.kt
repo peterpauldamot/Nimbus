@@ -308,7 +308,7 @@ fun TemperatureHeader(
     cityName: String
 ) {
     val temperature = formatTemperatureString(mainTemp?.temperature)
-    val feelsLike = convertToCelsius(mainTemp?.feelsLike)
+    val feelsLike = mainTemp?.feelsLike ?: "0"
     val description = capitalizeFirstLetter(weather?.description)
 
     Box (
@@ -332,7 +332,6 @@ fun TemperatureHeader(
                 color = MaterialTheme.colorScheme.onPrimary
             )
             Spacer(modifier = Modifier.height(32.dp))
-
 
             Text(
                 text = stringResource(R.string.temperature_degrees_celsius, temperature),
@@ -375,8 +374,8 @@ fun FiveDayDailyForecast(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             forecast?.weatherForecast?.map { dailyForecast ->
-                val minTemperature = convertToCelsius(dailyForecast.minTemperature)
-                val maxTemperature = convertToCelsius(dailyForecast.maxTemperature)
+                val minTemperature = dailyForecast.minTemperature
+                val maxTemperature = dailyForecast.maxTemperature
                 ForecastBox(
                     day = dailyForecast.dayOfWeek,
                     icon = dailyForecast.weatherStatus,
@@ -448,11 +447,6 @@ fun FiveDayForecastButton() {
 
 private fun formatTemperatureString(kelvin: Int?): String {
     return String.format("%02d", kelvin) ?: ""
-}
-
-private fun convertToCelsius(kelvin: Double?): String {
-    val celsius = kelvin?.minus(273.15)?.roundToInt() ?: 0
-    return String.format("%02d", celsius)
 }
 
 private fun capitalizeFirstLetter(input: String?): String? {

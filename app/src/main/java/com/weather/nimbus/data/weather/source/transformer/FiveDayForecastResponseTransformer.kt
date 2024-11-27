@@ -6,6 +6,7 @@
 
 package com.weather.nimbus.data.weather.source.transformer
 
+import com.weather.nimbus.common.model.TemperatureUnit
 import com.weather.nimbus.common.model.WeatherStatus
 import com.weather.nimbus.data.weather.model.CurrentWeatherResponse
 import com.weather.nimbus.data.weather.model.FiveDayForecastResponse
@@ -15,19 +16,27 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import kotlin.math.roundToInt
 
 class FiveDayForecastResponseTransformer {
     companion object {
         const val DEFAULT_DATE_FORMAT = "yyyy-MM-dd"
     }
 
-    fun transform(response: FiveDayForecastResponse): ForecastData {
+    fun transform(
+        response: FiveDayForecastResponse,
+        temperatureUnit: TemperatureUnit
+    ): ForecastData {
         val groupedForecast = groupForecastByDate(response.forecast)
 
         val dailyForecasts = groupedForecast.map { (date, dailyForecast) ->
             val weatherStatus = getDailyWeatherStatus(dailyForecast)
-            val minTemperature = getDailyLowestTemperature(dailyForecast)
-            val maxTemperature = getDailyHighestTemperature(dailyForecast)
+            val minTemperature = convertTemperature(
+                getDailyLowestTemperature(dailyForecast),
+                temperatureUnit)
+            val maxTemperature = convertTemperature(
+                getDailyHighestTemperature(dailyForecast),
+                temperatureUnit)
             val dayOfWeek = getDayOfWeek(date)
             ForecastData.Forecast(
                 date = date,
@@ -69,6 +78,14 @@ class FiveDayForecastResponseTransformer {
 
     private fun getDailyHighestTemperature(forecasts: List<FiveDayForecastResponse.Forecast>): Double {
         return forecasts.maxOfOrNull { it.main.maxTemperature } ?: 0.0
+    }
+
+    private fun convertTemperature(kelvin: Double, unit: TemperatureUnit): Int {
+        return when (unit) {
+            TemperatureUnit.CELSIUS -> (kelvin - 273.15).roundToInt()
+            TemperatureUnit.FAHRENHEIT -> ((kelvin - 273.15) * 9 / 5 + 32).roundToInt()
+            TemperatureUnit.KELVIN -> kelvin.roundToInt()
+        }
     }
 
     private fun getDailyWeatherStatus(forecasts: List<FiveDayForecastResponse.Forecast>): WeatherStatus {

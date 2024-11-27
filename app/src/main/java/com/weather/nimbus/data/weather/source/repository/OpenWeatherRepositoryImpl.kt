@@ -7,6 +7,7 @@
 package com.weather.nimbus.data.weather.source.repository
 
 import android.util.Log
+import com.weather.nimbus.common.model.TemperatureUnit
 import com.weather.nimbus.data.weather.model.WeatherData
 import com.weather.nimbus.data.weather.model.ForecastData
 import com.weather.nimbus.data.weather.source.api.OpenWeatherAPI
@@ -25,7 +26,8 @@ class OpenWeatherRepositoryImpl @Inject constructor(
 
     override suspend fun getCurrentWeather(
         latitude: String,
-        longitude: String
+        longitude: String,
+        temperatureUnit: TemperatureUnit
     ): Result<WeatherData> {
         return runCatching {
             Log.d("OpenWeatherRepository", "Fetching current weather data...")
@@ -36,7 +38,9 @@ class OpenWeatherRepositoryImpl @Inject constructor(
             )
             Log.d("OpenWeatherRepository", "Success fetching current weather data: $response")
 
-            val weatherData = currentWeatherTransformer.transform(response = response)
+            val weatherData = currentWeatherTransformer.transform(
+                response = response,
+                temperatureUnit = temperatureUnit)
             Result.success(weatherData)
         }.getOrElse { exception ->
             Log.e("OpenWeatherRepository", "Error fetching current weather data", exception)
@@ -46,7 +50,8 @@ class OpenWeatherRepositoryImpl @Inject constructor(
 
     override suspend fun getFiveDayForecast(
         latitude: String,
-        longitude: String
+        longitude: String,
+        temperatureUnit: TemperatureUnit
     ): Result<ForecastData> {
         return runCatching {
             Log.d("OpenWeatherRepository", "Fetching forecast weather data...")
@@ -57,7 +62,9 @@ class OpenWeatherRepositoryImpl @Inject constructor(
             )
             Log.d("OpenWeatherRepository", "Success fetching forecast weather data: $response")
 
-            val forecastData = fiveDayForecastTransformer.transform(response)
+            val forecastData = fiveDayForecastTransformer.transform(
+                response = response,
+                temperatureUnit = temperatureUnit)
             Result.success(forecastData)
         }.getOrElse { exception ->
             Log.e("OpenWeatherRepository", "Error fetching forecast weather data", exception)

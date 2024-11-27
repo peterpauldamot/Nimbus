@@ -10,11 +10,13 @@ import android.location.Location
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.weather.nimbus.common.model.TemperatureUnit
 import com.weather.nimbus.data.cities.model.CitiesResponse
 import com.weather.nimbus.data.weather.model.WeatherData
 import com.weather.nimbus.data.weather.model.ForecastData
 import com.weather.nimbus.domain.cities.GetCitiesUseCase
 import com.weather.nimbus.domain.location.GetCurrentLocationUseCase
+import com.weather.nimbus.domain.settings.SettingsUseCase
 import com.weather.nimbus.domain.weather.GetCurrentWeatherUseCase
 import com.weather.nimbus.domain.weather.GetFiveDayForecastUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,6 +27,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WeatherViewModel @Inject constructor(
+    private val settingsUseCase: SettingsUseCase,
     private val getCurrentWeather: GetCurrentWeatherUseCase,
     private val getFiveDayForecast: GetFiveDayForecastUseCase,
     private val getCurrentLocation: GetCurrentLocationUseCase,
@@ -32,6 +35,7 @@ class WeatherViewModel @Inject constructor(
 ) : ViewModel() {
     private val _weatherData = MutableStateFlow<WeatherData?>(null)
     val weatherData: StateFlow<WeatherData?> = _weatherData
+
 
     private val _forecastData = MutableStateFlow<ForecastData?>(null)
     val forecastData: StateFlow<ForecastData?> = _forecastData
@@ -46,8 +50,9 @@ class WeatherViewModel @Inject constructor(
     val isLoading: StateFlow<Boolean> = _isLoading
 
     fun getWeatherData(latitude: Double? = null, longitude: Double? = null) {
-        getCurrentWeather(latitude, longitude)
-        getFiveDayForecast(latitude, longitude)
+        val temperatureUnit = settingsUseCase.getTemperatureUnits()
+        getCurrentWeather(latitude, longitude, temperatureUnit)
+        getFiveDayForecast(latitude, longitude, temperatureUnit)
     }
 
     fun getCityData() {
@@ -63,7 +68,11 @@ class WeatherViewModel @Inject constructor(
         )
     }
 
-    private fun getCurrentWeather(lat: Double? = null, long: Double? = null) {
+    private fun getCurrentWeather(
+        lat: Double? = null,
+        long: Double? = null,
+        temperatureUnit: TemperatureUnit
+    ) {
         executeTask(
             task = {
                 val location = if (lat != null && long != null) {
@@ -76,7 +85,11 @@ class WeatherViewModel @Inject constructor(
                 }
 
                 location?.let {
-                    getCurrentWeather(it.latitude.toString(), it.longitude.toString())
+                    getCurrentWeather(
+                        it.latitude.toString(),
+                        it.longitude.toString(),
+                        temperatureUnit
+                    )
                 }
             },
             onSuccess = { response -> _weatherData.value = response.getOrNull() },
@@ -86,7 +99,11 @@ class WeatherViewModel @Inject constructor(
         )
     }
 
-    private fun getFiveDayForecast(lat: Double? = null, long: Double? = null) {
+    private fun getFiveDayForecast(
+        lat: Double? = null,
+        long: Double? = null,
+        temperatureUnit: TemperatureUnit
+    ) {
         executeTask(
             task = {
                 val location = if (lat != null && long != null) {
@@ -99,7 +116,11 @@ class WeatherViewModel @Inject constructor(
                 }
 
                 location?.let {
-                    getFiveDayForecast(it.latitude.toString(), it.longitude.toString())
+                    getFiveDayForecast(
+                        it.latitude.toString(),
+                        it.longitude.toString(),
+                        temperatureUnit
+                    )
                 }
             },
             onSuccess = { response -> _forecastData.value = response.getOrNull() },

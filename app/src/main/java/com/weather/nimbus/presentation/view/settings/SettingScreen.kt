@@ -38,10 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.weather.nimbus.common.model.AppThemes
-import com.weather.nimbus.common.model.TemperatureUnits
-import com.weather.nimbus.common.model.WeatherStatus
-import com.weather.nimbus.presentation.PreferencesManager
-import com.weather.nimbus.presentation.theme.NimbusTheme
+import com.weather.nimbus.common.model.TemperatureUnit
 import com.weather.nimbus.presentation.viewmodel.SettingsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -51,7 +48,7 @@ fun SettingsScreen(
     settingsViewModel: SettingsViewModel
 ) {
     val selectedTheme by settingsViewModel.selectedTheme.collectAsState()
-    //val selectedUnit by settingsViewModel.selectedUnit.collectAsState()
+    val selectedUnit by settingsViewModel.selectedTemperatureUnit.collectAsState()
 
     Scaffold(
         topBar = {
@@ -101,10 +98,10 @@ fun SettingsScreen(
 
                 SettingItem(
                     title = "Units",
-                    options = TemperatureUnits.entries,
-                    selectedOption = TemperatureUnits.KELVIN,
+                    options = TemperatureUnit.entries,
+                    selectedOption = selectedUnit,
                     onOptionSelected = { selectedUnit ->
-                        // TODO:
+                        settingsViewModel.updateTemperatureUnits(selectedUnit as TemperatureUnit)
                     }
                 )
 

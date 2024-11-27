@@ -6,7 +6,7 @@
 
 package com.weather.nimbus.common.model
 
-enum class TemperatureUnits {
+enum class TemperatureUnit {
     CELSIUS,
     FAHRENHEIT,
     KELVIN

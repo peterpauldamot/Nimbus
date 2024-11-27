@@ -6,19 +6,23 @@
 
 package com.weather.nimbus.data.weather.source.transformer
 
+import com.weather.nimbus.common.model.TemperatureUnit
 import com.weather.nimbus.common.model.WeatherStatus
 import com.weather.nimbus.data.weather.model.WeatherData
 import com.weather.nimbus.data.weather.model.CurrentWeatherResponse
 import kotlin.math.roundToInt
 
 class CurrentWeatherResponseTransformer {
-    fun transform(response: CurrentWeatherResponse): WeatherData {
+    fun transform(
+        response: CurrentWeatherResponse,
+        temperatureUnit: TemperatureUnit
+    ): WeatherData {
         return WeatherData(
             cityName = response.cityName,
             date = response.date,
             timezone = response.timezone,
             weather = transformWeather(response.weather.first()),
-            mainConditions = transformMain(response.main),
+            mainConditions = transformMain(response.main, temperatureUnit),
             wind = transformWind(response.wind),
             clouds = response.clouds.cloudPercentage
         )
@@ -43,12 +47,15 @@ class CurrentWeatherResponseTransformer {
         )
     }
 
-    private fun transformMain(main: CurrentWeatherResponse.Main): WeatherData.Main {
+    private fun transformMain(
+        main: CurrentWeatherResponse.Main,
+        temperatureUnit: TemperatureUnit
+    ): WeatherData.Main {
         return WeatherData.Main(
-            temperature = convertToCelsius(main.temperature),
-            feelsLike = main.feelsLike,
-            minTemperature = convertToCelsius(main.minTemperature),
-            maxTemperature = convertToCelsius(main.maxTemperature),
+            temperature = convertTemperature(main.temperature, temperatureUnit),
+            feelsLike = convertTemperature(main.feelsLike, temperatureUnit),
+            minTemperature = convertTemperature(main.minTemperature, temperatureUnit),
+            maxTemperature = convertTemperature(main.maxTemperature, temperatureUnit),
             pressure = main.pressure,
             humidity = main.humidity
         )
@@ -86,7 +93,11 @@ class CurrentWeatherResponseTransformer {
         )
     }
 
-    private fun convertToCelsius(kelvin: Double): Int {
-        return kelvin.minus(273.15).roundToInt()
+    private fun convertTemperature(kelvin: Double, unit: TemperatureUnit): Int {
+        return when (unit) {
+            TemperatureUnit.CELSIUS -> (kelvin - 273.15).roundToInt()
+            TemperatureUnit.FAHRENHEIT -> ((kelvin - 273.15) * 9 / 5 + 32).roundToInt()
+            TemperatureUnit.KELVIN -> kelvin.roundToInt()
+        }
     }
 }

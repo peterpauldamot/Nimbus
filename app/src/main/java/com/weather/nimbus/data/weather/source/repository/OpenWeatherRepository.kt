@@ -6,18 +6,20 @@
 
 package com.weather.nimbus.data.weather.source.repository
 
+import com.weather.nimbus.common.model.TemperatureUnit
 import com.weather.nimbus.data.weather.model.WeatherData
-import com.weather.nimbus.data.weather.model.FiveDayForecastResponse
 import com.weather.nimbus.data.weather.model.ForecastData
 
 interface OpenWeatherRepository {
     suspend fun getCurrentWeather(
         latitude: String,
-        longitude: String
+        longitude: String,
+        temperatureUnit: TemperatureUnit
     ): Result<WeatherData>
 
     suspend fun getFiveDayForecast(
         latitude: String,
-        longitude: String
+        longitude: String,
+        temperatureUnit: TemperatureUnit
     ): Result<ForecastData>
 }

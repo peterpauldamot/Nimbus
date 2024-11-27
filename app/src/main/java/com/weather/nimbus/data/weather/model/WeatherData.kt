@@ -24,7 +24,7 @@ data class WeatherData(
 
     data class Main(
         val temperature: Int,
-        val feelsLike: Double,
+        val feelsLike: Int,
         val minTemperature: Int,
         val maxTemperature: Int,
         val pressure: Int,
@@ -36,9 +36,5 @@ data class WeatherData(
         val speedClassification: String,
         val direction: String,
         val degrees: Int
-    )
-
-    data class Clouds(
-        val cloudiness: Double
     )
 }

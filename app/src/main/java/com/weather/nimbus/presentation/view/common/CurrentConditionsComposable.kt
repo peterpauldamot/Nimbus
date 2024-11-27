@@ -548,7 +548,7 @@ private fun CurrentConditionsPreview() {
         ),
         mainConditions = WeatherData.Main(
             temperature = 29,
-            feelsLike = 286.37,
+            feelsLike = 27,
             minTemperature = 27,
             maxTemperature = 31,
             pressure = 1020,
