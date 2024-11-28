@@ -48,7 +48,7 @@ fun LoadingOverlay(
                         color = MaterialTheme.colorScheme.primary
                     )
                     Text(
-                        text = stringResource(R.string.fetching_weather_data),
+                        text = stringResource(R.string.label_fetching_weather_data),
                         style = MaterialTheme.typography.bodyLarge
                     )
                 }

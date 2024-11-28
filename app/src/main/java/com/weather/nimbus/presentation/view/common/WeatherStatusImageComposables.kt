@@ -1,10 +1,10 @@
 /*
  * Created by Peter Paul Damot on 11-17-2024
  * Copyright (c) 2024. All rights reserved.
- * Last modified on 11-17-2024.
+ * Last modified on 11-28-2024.
  */
 
-package com.weather.nimbus.presentation.view.dashboard
+package com.weather.nimbus.presentation.view.common
 
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode

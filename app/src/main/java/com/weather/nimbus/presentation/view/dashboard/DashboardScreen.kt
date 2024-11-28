@@ -84,6 +84,7 @@ import com.weather.nimbus.presentation.theme.MorningColor
 import com.weather.nimbus.presentation.theme.NightColor
 import com.weather.nimbus.presentation.theme.PreDawnColor
 import com.weather.nimbus.presentation.view.common.CurrentConditions
+import com.weather.nimbus.presentation.view.common.MakeWeatherStatusImage
 import com.weather.nimbus.presentation.viewmodel.WeatherViewModel
 import java.time.LocalTime
 import java.util.Locale
@@ -334,7 +335,7 @@ fun TemperatureHeader(
             Spacer(modifier = Modifier.height(32.dp))
 
             Text(
-                text = stringResource(R.string.temperature_degrees_celsius, temperature),
+                text = stringResource(R.string.label_value_space_degrees, temperature),
                 style = MaterialTheme.typography.displayLarge,
                 color = MaterialTheme.colorScheme.onPrimary,
                 modifier = Modifier.layout { measurable, constraints ->
@@ -348,7 +349,7 @@ fun TemperatureHeader(
                     }
             )
             Text(
-                text = stringResource(R.string.temperature_feels_like, feelsLike),
+                text = stringResource(R.string.label_value_feels_like_degrees, feelsLike),
                 style = MaterialTheme.typography.displaySmall,
                 color = MaterialTheme.colorScheme.onPrimary
             )
@@ -363,7 +364,7 @@ fun FiveDayDailyForecast(
     Column {
         Text(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-            text = stringResource(R.string.five_day_forecast),
+            text = stringResource(R.string.label_five_day_forecast),
             style = MaterialTheme.typography.displaySmall,
             color = MaterialTheme.colorScheme.onSecondary
         )
@@ -380,7 +381,7 @@ fun FiveDayDailyForecast(
                     day = dailyForecast.dayOfWeek,
                     icon = dailyForecast.weatherStatus,
                     minMaxTemp = stringResource(
-                        R.string.temperature_min_max,
+                        R.string.label_value_min_max_temperature,
                         minTemperature,
                         maxTemperature
                     )
@@ -437,7 +438,7 @@ fun FiveDayForecastButton() {
             onClick = { /* TODO */ }
         ) {
             Text(
-                text = stringResource(R.string.label_five_day_forecast),
+                text = stringResource(R.string.label_five_day_forecast_caps),
                 color = Color.Black,
                 fontSize = 24.sp
             )
