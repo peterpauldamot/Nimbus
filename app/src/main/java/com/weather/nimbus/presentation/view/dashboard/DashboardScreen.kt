@@ -6,7 +6,6 @@
 
 package com.weather.nimbus.presentation.view.dashboard
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -83,12 +82,11 @@ import com.weather.nimbus.presentation.theme.LateNightColor
 import com.weather.nimbus.presentation.theme.MidnightColor
 import com.weather.nimbus.presentation.theme.MorningColor
 import com.weather.nimbus.presentation.theme.NightColor
-import com.weather.nimbus.presentation.theme.NimbusTheme
 import com.weather.nimbus.presentation.theme.PreDawnColor
 import com.weather.nimbus.presentation.view.common.CurrentConditions
 import com.weather.nimbus.presentation.viewmodel.WeatherViewModel
 import java.time.LocalTime
-import kotlin.math.roundToInt
+import java.util.Locale
 
 @Composable
 fun MainDashboardComposables(
@@ -131,7 +129,7 @@ fun MainDashboardComposables(
             TemperatureHeader(
                 mainTemp = weatherData?.mainConditions,
                 weather = weatherData?.weather,
-                cityName = weatherData?.cityName ?: "Current Location"
+                cityName = weatherData?.cityName
             )
             Spacer(modifier = Modifier.height(160.dp))
 
@@ -173,7 +171,7 @@ fun MyTopBar(
             IconButton(onClick = onSearchIconClick) {
                 Icon(
                     imageVector = Icons.Filled.Search,
-                    contentDescription = "Search",
+                    contentDescription = stringResource(R.string.content_description_search_location_icon),
                     tint = Color.Black
                 )
             }
@@ -182,7 +180,7 @@ fun MyTopBar(
             IconButton(onClick = onNavigateToSettings) {
                 Icon(
                     imageVector = Icons.Filled.MoreVert,
-                    contentDescription = "Settings",
+                    contentDescription = stringResource(R.string.content_description_settings_icon),
                     tint = Color.Black
                 )
             }
@@ -194,8 +192,7 @@ fun MyTopBar(
     )
 }
 
-
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LocationSearchBar(
     onClose: () -> Unit,
@@ -230,12 +227,15 @@ fun LocationSearchBar(
                     onSearch = { expanded = false },
                     expanded = expanded,
                     onExpandedChange = { expanded = it },
-                    placeholder = { Text("Search for a city") },
-                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search") },
+                    placeholder = { Text(stringResource(R.string.label_search_for_a_city)) },
+                    leadingIcon = { Icon(
+                        Icons.Default.Search,
+                        contentDescription = stringResource(R.string.content_description_search_location_icon)
+                    ) },
                     trailingIcon = {
                         Icon(
                             Icons.Default.Cancel,
-                            contentDescription = "Clear search text",
+                            contentDescription = stringResource(R.string.content_description_clear_search_text),
                             modifier = Modifier.clickable {
                                 textFieldState.clearText()
                             }
@@ -294,7 +294,7 @@ fun LocationSearchBar(
                         .height(220.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text("Loading Suggestions...")
+                    Text(stringResource(R.string.label_loading_suggestions))
                 }
             }
         }
@@ -305,11 +305,11 @@ fun LocationSearchBar(
 fun TemperatureHeader(
     mainTemp: WeatherData.Main?,
     weather: WeatherData.Weather?,
-    cityName: String
+    cityName: String?
 ) {
     val temperature = formatTemperatureString(mainTemp?.temperature)
-    val feelsLike = mainTemp?.feelsLike ?: "0"
-    val description = capitalizeFirstLetter(weather?.description)
+    val feelsLike = mainTemp?.feelsLike ?: stringResource(R.string.label_amount_zero)
+    val description = weather?.description ?: stringResource(R.string.label_empty_string)
 
     Box (
         modifier = Modifier.fillMaxWidth(),
@@ -319,7 +319,7 @@ fun TemperatureHeader(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = cityName,
+                text = cityName ?: stringResource(R.string.label_no_data_on_location),
                 style = MaterialTheme.typography.displayMedium,
                 color = MaterialTheme.colorScheme.onPrimary
             )
@@ -327,7 +327,7 @@ fun TemperatureHeader(
             MakeWeatherStatusImage(weather?.weatherStatus)
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = "$description",
+                text = description,
                 style = MaterialTheme.typography.displayMedium,
                 color = MaterialTheme.colorScheme.onPrimary
             )
@@ -416,7 +416,7 @@ private fun ForecastBox(
                     .padding(vertical = 5.dp)
                 ,
                 painter = painterResource(id = makeWeatherStatusIcon(icon)),
-                contentDescription = "Weather Icon"
+                contentDescription = stringResource(R.string.content_description_weather_status_image)
             )
             Text(
                 text = minMaxTemp,
@@ -437,7 +437,7 @@ fun FiveDayForecastButton() {
             onClick = { /* TODO */ }
         ) {
             Text(
-                text = "5 DAY FORECAST",
+                text = stringResource(R.string.label_five_day_forecast),
                 color = Color.Black,
                 fontSize = 24.sp
             )
@@ -446,14 +446,7 @@ fun FiveDayForecastButton() {
 }
 
 private fun formatTemperatureString(kelvin: Int?): String {
-    return String.format("%02d", kelvin) ?: ""
-}
-
-private fun capitalizeFirstLetter(input: String?): String? {
-    if (input == null) return null
-    return input
-        .split(" ")
-        .joinToString(" ") { it.replaceFirstChar { char -> char.uppercase() } } // Capitalize the first letter of each word
+    return kelvin?.let { String.format(Locale.ROOT, "%02d", it) } ?: ""
 }
 
 private fun getGradientForCurrentTheme(backgroundColor: Color): Brush {

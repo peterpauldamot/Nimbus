@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.weather.nimbus.R
@@ -55,18 +56,20 @@ fun MakeWeatherStatusImage(weatherStatus: WeatherStatus?) {
 @Composable
 private fun SunnyWeatherStatus() {
     val sunDrawable = painterResource(id = R.drawable.weather_status_clear_day)
-    val rotationAngle by rememberInfiniteTransition(label = "Sun Rotation").animateFloat(
+    val rotationAngle by rememberInfiniteTransition(
+        label = stringResource(R.string.transition_sun_rotation)
+    ).animateFloat(
         initialValue = 0f,
         targetValue = 360f,
         animationSpec = infiniteRepeatable(
             animation = tween(durationMillis = 90000, easing = LinearEasing)
         ),
-        label = "rotationAngle"
+        label = stringResource(R.string.animation_sun_rotation_angle)
     )
 
     Image(
         painter = sunDrawable,
-        contentDescription = "Rotating Sun",
+        contentDescription = stringResource(R.string.content_description_rotating_sun),
         modifier = Modifier
             .size(200.dp)
             .rotate(rotationAngle)
@@ -80,18 +83,19 @@ private fun RainyWeatherStatus() {
             .fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        val cloudOffset by rememberInfiniteTransition(label = "Cloud Offset").animateFloat(
+        val cloudOffset by rememberInfiniteTransition(
+            label = stringResource(R.string.transition_cloud_offset)).animateFloat(
             initialValue = 0f,
             targetValue = 5f,
             animationSpec = infiniteRepeatable(
                 animation = tween(durationMillis = 2000, easing = LinearEasing),
                 repeatMode = RepeatMode.Reverse
             ),
-            label = "Cloud Offset Animation"
+            label = stringResource(R.string.animation_cloud_offset)
         )
         Image(
-            painter = painterResource(id = R.drawable.weather_status_raincloud), // Replace with your cloud drawable
-            contentDescription = "Cloud",
+            painter = painterResource(id = R.drawable.weather_status_raincloud),
+            contentDescription = stringResource(R.string.content_description_rainy_cloud_image),
             modifier = Modifier
                 .size(width = 200.dp, height = 160.dp)
                 .offset(y = cloudOffset.dp)
@@ -112,7 +116,7 @@ private fun RainyWeatherStatus() {
 private fun WeatherStatusTemplateWithImage(image: Int) {
     Image(
         painter = painterResource(id = image),
-        contentDescription = "Cloud",
+        contentDescription = stringResource(R.string.content_description_generic_weather_status_image),
         modifier = Modifier
             .size(200.dp)
     )
@@ -120,7 +124,7 @@ private fun WeatherStatusTemplateWithImage(image: Int) {
 
 @Composable
 private fun RaindropAnimation(delay: Int) {
-    val transition = rememberInfiniteTransition(label = "Raindrop Animation")
+    val transition = rememberInfiniteTransition(label = stringResource(R.string.transition_raindrop))
     val dropXPosition by transition.animateFloat(
         initialValue = -5f,
         targetValue = 10f,
@@ -128,7 +132,7 @@ private fun RaindropAnimation(delay: Int) {
             animation = tween(durationMillis = 1200, delayMillis = delay, easing = LinearEasing),
             repeatMode = RepeatMode.Restart
         ),
-        label = "Raindrop X Position Animation"
+        label = stringResource(R.string.animation_raindrop_x_position)
     )
 
     val dropYPosition by transition.animateFloat(
@@ -138,7 +142,7 @@ private fun RaindropAnimation(delay: Int) {
             animation = tween(durationMillis = 1200, delayMillis = delay, easing = LinearEasing),
             repeatMode = RepeatMode.Restart
         ),
-        label = "Raindrop Y Position Animation"
+        label = stringResource(R.string.animation_raindrop_y_position)
     )
 
     val dropAlpha by transition.animateFloat(
@@ -147,23 +151,23 @@ private fun RaindropAnimation(delay: Int) {
         animationSpec = infiniteRepeatable(
             animation = keyframes {
                 durationMillis = 1200 + delay
-                0f at 500 with LinearEasing
-                1f at 1200 with LinearEasing
-                0.8f at durationMillis-300 with LinearEasing
+                0f at 500 using LinearEasing
+                1f at 1200 using LinearEasing
+                0.8f at durationMillis-300 using LinearEasing
                 0f at durationMillis
             },
             repeatMode = RepeatMode.Restart
         ),
-        label = "Raindrop Alpha Animation"
+        label = stringResource(R.string.animation_raindrop_alpha)
     )
 
     Image(
-        painter = painterResource(id = R.drawable.weather_status_raindrop), // Replace with your raindrop drawable
-        contentDescription = "Raindrop",
+        painter = painterResource(id = R.drawable.weather_status_raindrop),
+        contentDescription = stringResource(R.string.content_description_raindrop_image),
         modifier = Modifier
-            .offset(x = dropXPosition.dp, y = dropYPosition.dp) // Diagonal offset applied here
-            .alpha(dropAlpha) // Raindrop fades as it falls
-            .size(16.dp) // Adjust size as needed
+            .offset(x = dropXPosition.dp, y = dropYPosition.dp)
+            .alpha(dropAlpha)
+            .size(16.dp)
     )
 }
 

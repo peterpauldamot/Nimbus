@@ -181,7 +181,7 @@ private fun TemperatureBox(
                         Image(
                             modifier = Modifier.width(TEMPERATURE_IMAGE_SCALE_WIDTH.dp),
                             painter = painterResource(id = R.drawable.current_conditions_temperature_scale),
-                            contentDescription = "Weather Scale"
+                            contentDescription = stringResource(R.string.content_description_temperature_image_scale)
                         )
                         Image(
                             modifier = Modifier
@@ -189,7 +189,7 @@ private fun TemperatureBox(
                                 .offset(y = TEMPERATURE_POINTER_OFFSET_Y.dp)
                                 .rotate(animatedRotation.value),
                             painter = painterResource(id = R.drawable.current_conditions_temperature_pointer),
-                            contentDescription = "Weather Pointer"
+                            contentDescription = stringResource(R.string.content_description_temperature_scale_pointer)
                         )
                     }
                     Spacer(Modifier.height(4.dp))
@@ -269,7 +269,7 @@ private fun HumidityBox(
                     Image(
                         modifier = Modifier.size(80.dp),
                         painter = painterResource(id = R.drawable.current_conditions_humidity_scale_background),
-                        contentDescription = "Pressure Scale"
+                        contentDescription = stringResource(R.string.content_description_pressure_image_background)
                     )
                     Box(
                         modifier = Modifier
@@ -294,7 +294,7 @@ private fun HumidityBox(
                     Image(
                         modifier = Modifier.size(80.dp),
                         painter = painterResource(id = R.drawable.current_conditions_humidity_scale_foreground),
-                        contentDescription = "Pressure Scale"
+                        contentDescription = stringResource(R.string.content_description_pressure_image_foreground)
                     )
                 }
 
@@ -307,7 +307,8 @@ private fun HumidityBox(
                     Column() {
                         Icon(
                             painter = painterResource(id = R.drawable.icon_common_arrow_left),
-                            contentDescription = "Pressure bar arrow pointer",
+                            contentDescription = stringResource(
+                                R.string.content_description_pressure_bar_arrow),
                             modifier = Modifier
                                 .size(10.dp)
                                 .offset(
@@ -391,7 +392,8 @@ private fun WindBox(
 
                     Icon(
                         painter = painterResource(id = R.drawable.icon_current_conditions_direction),
-                        contentDescription = "Wind Direction",
+                        contentDescription = stringResource(
+                            R.string.content_description_wind_direction_image),
                         modifier = Modifier
                             .size(WIND_DIRECTION_IMAGE_SIZE.dp)
                             .rotate(animatedRotationAngle.value),
@@ -437,7 +439,7 @@ private fun PressureBox(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = "${mainConditions.pressure} hpa",
+                    text = stringResource(R.string.label_value_pascal, mainConditions.pressure),
                     style = MaterialTheme.typography.titleSmall,
                     color = MaterialTheme.colorScheme.onTertiary
                 )
@@ -448,7 +450,8 @@ private fun PressureBox(
                     Image(
                         modifier = Modifier.size(PRESSURE_IMAGE_SCALE_SIZE.dp),
                         painter = painterResource(id = R.drawable.current_conditions_pressure_scale),
-                        contentDescription = "Pressure Scale"
+                        contentDescription = stringResource(
+                            R.string.content_description_pressure_image_scale)
                     )
                     Image(
                         modifier = Modifier
@@ -456,7 +459,8 @@ private fun PressureBox(
                             .offset(y = PRESSURE_POINTER_OFFSET_Y.dp)
                             .rotate(animatedRotation.value),
                         painter = painterResource(id = R.drawable.current_conditions_pressure_pointer),
-                        contentDescription = "Pressure Pointer"
+                        contentDescription = stringResource(
+                            R.string.content_description_pressure_scale_pointer)
                     )
                 }
             }
@@ -517,16 +521,16 @@ private fun makeDropletShape(): GenericShape {
 
         // Left curve (starting from bottom to top)
         cubicTo(
-            size.width * 0.25f, size.height,  // Control point on left
-            0f, size.height * 0.5f,          // Control point at the upper left
-            size.width / 2, 0f               // Top center point (pointed tip)
+            size.width * 0.25f, size.height,
+            0f, size.height * 0.5f,
+            size.width / 2, 0f
         )
 
         // Right curve (starting from bottom to top)
         cubicTo(
-            size.width, size.height * 0.5f,   // Control point on right
-            size.width * 0.75f, size.height,  // Control point at the upper right
-            size.width / 2, size.height       // Bottom center point
+            size.width, size.height * 0.5f,
+            size.width * 0.75f, size.height,
+            size.width / 2, size.height
         )
 
         close()

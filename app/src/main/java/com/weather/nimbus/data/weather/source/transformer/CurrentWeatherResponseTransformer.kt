@@ -40,7 +40,7 @@ class CurrentWeatherResponseTransformer {
             in 801..804 -> WeatherStatus.CLOUDS
             else -> WeatherStatus.CLEAR
         }
-        val description = weather.description
+        val description = capitalizeFirstLetter(weather.description)
         return WeatherData.Weather(
             weatherStatus,
             description
@@ -99,5 +99,12 @@ class CurrentWeatherResponseTransformer {
             TemperatureUnit.FAHRENHEIT -> ((kelvin - 273.15) * 9 / 5 + 32).roundToInt()
             TemperatureUnit.KELVIN -> kelvin.roundToInt()
         }
+    }
+
+    private fun capitalizeFirstLetter(input: String?): String {
+        if (input == null) return ""
+        return input
+            .split(" ")
+            .joinToString(" ") { it.replaceFirstChar { char -> char.uppercase() } }
     }
 }
